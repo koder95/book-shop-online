@@ -1,4 +1,4 @@
-package pl.koder95.bso.controller;
+package pl.koder95.bso.exception;
 
 public class DataProcessingException extends RuntimeException {
     public DataProcessingException(String msg, Exception cause) {

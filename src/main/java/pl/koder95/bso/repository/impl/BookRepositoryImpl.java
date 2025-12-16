@@ -1,4 +1,4 @@
-package pl.koder95.bso.controller.impl;
+package pl.koder95.bso.repository.impl;
 
 import java.util.List;
 import org.hibernate.Session;
@@ -6,8 +6,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import pl.koder95.bso.controller.BookRepository;
-import pl.koder95.bso.controller.DataProcessingException;
+import pl.koder95.bso.repository.BookRepository;
+import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.model.Book;
 
 @Repository

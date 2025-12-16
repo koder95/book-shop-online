@@ -1,4 +1,4 @@
-package pl.koder95.bso.controller;
+package pl.koder95.bso.repository;
 
 import java.util.List;
 import pl.koder95.bso.model.Book;
