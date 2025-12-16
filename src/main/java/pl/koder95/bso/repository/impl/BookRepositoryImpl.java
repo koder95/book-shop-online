@@ -1,23 +1,19 @@
 package pl.koder95.bso.repository.impl;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import pl.koder95.bso.repository.BookRepository;
 import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.model.Book;
+import pl.koder95.bso.repository.BookRepository;
 
 @Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
-
-    @Autowired
-    public BookRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Book save(Book book) {
