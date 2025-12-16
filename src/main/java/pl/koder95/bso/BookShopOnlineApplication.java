@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import pl.koder95.bso.controller.BookService;
+import pl.koder95.bso.service.BookService;
 import pl.koder95.bso.model.Book;
 
 @SpringBootApplication

@@ -1,10 +1,10 @@
-package pl.koder95.bso.controller.impl;
+package pl.koder95.bso.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.koder95.bso.controller.BookRepository;
-import pl.koder95.bso.controller.BookService;
+import pl.koder95.bso.repository.BookRepository;
+import pl.koder95.bso.service.BookService;
 import pl.koder95.bso.model.Book;
 
 @Service
