@@ -6,8 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import pl.koder95.bso.service.BookService;
 import pl.koder95.bso.model.Book;
+import pl.koder95.bso.service.BookService;
 
 @SpringBootApplication
 public class BookShopOnlineApplication {
@@ -26,6 +26,7 @@ public class BookShopOnlineApplication {
             book1.setPrice(BigDecimal.valueOf(19.95));
             BookService bookService = ctx.getBean(BookService.class);
             bookService.save(book1);
+            System.out.println(bookService.findAll());
         };
     }
 }

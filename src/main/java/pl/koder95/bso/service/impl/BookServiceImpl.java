@@ -1,20 +1,16 @@
 package pl.koder95.bso.service.impl;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.koder95.bso.model.Book;
 import pl.koder95.bso.repository.BookRepository;
 import pl.koder95.bso.service.BookService;
-import pl.koder95.bso.model.Book;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
-
-    @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
 
     @Override
     public Book save(Book book) {
