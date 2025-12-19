@@ -48,4 +48,19 @@ public class BookController {
     public void delete(@PathVariable Long id) {
         bookService.delete(id);
     }
+
+    @PutMapping("/{id}")
+    public BookDto update(@PathVariable Long id, @RequestBody CreateBookRequestDto book) {
+        try {
+            return bookService.update(id, book);
+        } catch (DataProcessingException e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(400));
+        }
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        bookService.delete(id);
+    }
 }

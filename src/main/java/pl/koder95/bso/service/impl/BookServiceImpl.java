@@ -72,4 +72,17 @@ public class BookServiceImpl implements BookService {
             throw new DataProcessingException("Cannot delete book: " + id, e);
         }
     }
+
+    @Override
+    public BookDto update(Long id, CreateBookRequestDto book) {
+        Book model = bookMapper.toModel(book);
+        model.setId(id);
+        Book updated = bookRepository.save(model);
+        return bookMapper.toDto(updated);
+    }
+
+    @Override
+    public void delete(Long id) {
+        bookRepository.deleteById(id);
+    }
 }
