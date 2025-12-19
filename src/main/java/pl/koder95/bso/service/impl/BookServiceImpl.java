@@ -3,6 +3,10 @@ package pl.koder95.bso.service.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.koder95.bso.dto.BookDto;
+import pl.koder95.bso.dto.CreateBookRequestDto;
+import pl.koder95.bso.exception.EntityNotFoundException;
+import pl.koder95.bso.mapper.BookMapper;
 import pl.koder95.bso.model.Book;
 import pl.koder95.bso.repository.BookRepository;
 import pl.koder95.bso.service.BookService;
@@ -11,14 +15,27 @@ import pl.koder95.bso.service.BookService;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     @Override
-    public Book save(Book book) {
-        return bookRepository.save(book);
+    public BookDto save(CreateBookRequestDto book) {
+        Book saved = bookRepository.save(bookMapper.toModel(book));
+        return bookMapper.toDto(saved);
     }
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public List<BookDto> findAll() {
+        return bookRepository.findAll().stream()
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public BookDto get(Long id) {
+        return bookRepository.findById(id)
+                .map(bookMapper::toDto)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Entity with id " + id + " not found")
+                );
     }
 }
