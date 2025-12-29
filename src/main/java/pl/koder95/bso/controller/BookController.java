@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.koder95.bso.dto.BookDto;
+import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
 import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.exception.EntityNotFoundException;
@@ -67,6 +68,15 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         bookService.delete(id);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> search(BookSearchParametersDto params) {
+        try {
+            return bookService.search(params);
+        } catch (DataProcessingException e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(400));
+        }
     }
 }
 
