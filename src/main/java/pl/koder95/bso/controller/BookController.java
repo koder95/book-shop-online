@@ -1,6 +1,6 @@
 package pl.koder95.bso.controller;
 
-import jakarta.persistence.PersistenceException;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
@@ -38,14 +38,11 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto createBook(@RequestBody CreateBookRequestDto createRequest) {
+    public BookDto createBook(@Valid @RequestBody CreateBookRequestDto createRequest) {
         try {
             return bookService.save(createRequest);
         } catch (DataProcessingException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof PersistenceException pe) {
-                throw new ResponseStatusException(HttpStatusCode.valueOf(409), pe.getMessage());
-            }
+            // TODO: relocate handle of exceptions to central management
             throw new ResponseStatusException(HttpStatusCode.valueOf(400));
         }
     }
