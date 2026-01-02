@@ -1,15 +1,13 @@
 package pl.koder95.bso.repository.book;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.model.Book;
 import pl.koder95.bso.repository.SpecificationManager;
 import pl.koder95.bso.repository.SpecificationProvider;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component
