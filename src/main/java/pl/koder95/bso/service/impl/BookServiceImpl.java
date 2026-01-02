@@ -2,7 +2,9 @@ package pl.koder95.bso.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
 import pl.koder95.bso.exception.EntityNotFoundException;
@@ -19,36 +21,56 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto save(CreateBookRequestDto book) {
-        Book saved = bookRepository.save(bookMapper.toModel(book));
-        return bookMapper.toDto(saved);
+        try {
+            Book saved = bookRepository.save(bookMapper.toModel(book));
+            return bookMapper.toDto(saved);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+        }
     }
 
     @Override
     public List<BookDto> findAll() {
-        return bookRepository.findAll().stream()
-                .map(bookMapper::toDto)
-                .toList();
+        try {
+            return bookRepository.findAll().stream()
+                    .map(bookMapper::toDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+        }
     }
 
     @Override
     public BookDto get(Long id) {
-        return bookRepository.findById(id)
-                .map(bookMapper::toDto)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Entity with id " + id + " not found")
-                );
+        try {
+            return bookRepository.findById(id)
+                    .map(bookMapper::toDto)
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Entity with id " + id + " not found")
+                    );
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+        }
     }
 
     @Override
     public BookDto update(Long id, CreateBookRequestDto book) {
         Book model = bookMapper.toModel(book);
         model.setId(id);
-        Book updated = bookRepository.save(model);
-        return bookMapper.toDto(updated);
+        try {
+            Book updated = bookRepository.save(model);
+            return bookMapper.toDto(updated);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+        }
     }
 
     @Override
     public void delete(Long id) {
-        bookRepository.deleteById(id);
+        try {
+            bookRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+        }
     }
 }
