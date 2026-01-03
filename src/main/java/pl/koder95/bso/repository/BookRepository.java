@@ -1,10 +1,11 @@
 package pl.koder95.bso.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Component;
 import pl.koder95.bso.model.Book;
 
-public interface BookRepository {
-    Book save(Book book);
-
-    List<Book> findAll();
+@Component
+public interface BookRepository extends JpaRepository<Book, Long>,
+                                        JpaSpecificationExecutor<Book> {
 }
