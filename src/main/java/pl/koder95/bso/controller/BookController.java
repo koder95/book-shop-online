@@ -3,6 +3,7 @@ package pl.koder95.bso.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto create(@RequestBody CreateBookRequestDto createRequest) {
+    public BookDto create(@Validated @RequestBody CreateBookRequestDto createRequest) {
         return bookService.save(createRequest);
     }
 
@@ -48,4 +49,3 @@ public class BookController {
         bookService.delete(id);
     }
 }
-

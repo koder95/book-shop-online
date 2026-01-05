@@ -2,11 +2,10 @@ package pl.koder95.bso.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
+import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.BookMapper;
 import pl.koder95.bso.model.Book;
@@ -25,7 +24,7 @@ public class BookServiceImpl implements BookService {
             Book saved = bookRepository.save(bookMapper.toModel(book));
             return bookMapper.toDto(saved);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+            throw new DataProcessingException("Cannot save book: " + book, e);
         }
     }
 
@@ -36,7 +35,7 @@ public class BookServiceImpl implements BookService {
                     .map(bookMapper::toDto)
                     .toList();
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+            throw new DataProcessingException("Cannot find all books", e);
         }
     }
 
@@ -49,19 +48,24 @@ public class BookServiceImpl implements BookService {
                             () -> new EntityNotFoundException("Entity with id " + id + " not found")
                     );
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+            throw new EntityNotFoundException("Cannot find book by id: " + id);
         }
     }
 
     @Override
     public BookDto update(Long id, CreateBookRequestDto book) {
-        Book model = bookMapper.toModel(book);
-        model.setId(id);
+        Book model = bookMapper.toModel(get(id));
+        model.setAuthor(book.getAuthor());
+        model.setTitle(book.getTitle());
+        model.setPrice(book.getPrice());
+        model.setIsbn(book.getIsbn());
+        model.setDescription(book.getDescription());
+        model.setCoverImage(book.getCoverImage());
         try {
             Book updated = bookRepository.save(model);
             return bookMapper.toDto(updated);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+            throw new DataProcessingException("Cannot update book: " + book, e);
         }
     }
 
@@ -70,7 +74,7 @@ public class BookServiceImpl implements BookService {
         try {
             bookRepository.deleteById(id);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500));
+            throw new DataProcessingException("Cannot delete book: " + id, e);
         }
     }
 }
