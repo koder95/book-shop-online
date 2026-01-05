@@ -1,6 +1,7 @@
 package pl.koder95.bso.repository.impl;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -39,10 +40,31 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public List<Book> findAll() {
-        try (Session session = sessionFactory.openSession()) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
             return session.createQuery("from Book", Book.class).getResultList();
         } catch (Exception ex) {
             throw new DataProcessingException("Cannot find all books", ex);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            return Optional.ofNullable(session.find(Book.class, id));
+        } catch (Exception ex) {
+            throw new DataProcessingException("Cannot find a book by id: " + id, ex);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 }
