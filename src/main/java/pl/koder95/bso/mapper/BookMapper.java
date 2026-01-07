@@ -1,6 +1,7 @@
 package pl.koder95.bso.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import pl.koder95.bso.config.MapperConfig;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
@@ -11,4 +12,8 @@ public interface BookMapper {
     BookDto toDto(Book book);
 
     Book toModel(CreateBookRequestDto dto);
+
+    Book toModel(BookDto dto);
+
+    void updateModel(@MappingTarget Book model, CreateBookRequestDto dto);
 }
