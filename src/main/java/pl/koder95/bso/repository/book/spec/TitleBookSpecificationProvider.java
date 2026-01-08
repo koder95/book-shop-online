@@ -1,5 +1,6 @@
 package pl.koder95.bso.repository.book.spec;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.koder95.bso.dto.BookSearchParametersDto;
@@ -14,7 +15,7 @@ public class TitleBookSpecificationProvider extends InBookSpecificationProvider 
     }
 
     @Override
-    public Object[] getValues(BookSearchParametersDto params) {
-        return params == null ? new Object[0] : params.titles();
+    public List<String> getValues(BookSearchParametersDto params) {
+        return params == null ? List.of() : params.titles();
     }
 }
