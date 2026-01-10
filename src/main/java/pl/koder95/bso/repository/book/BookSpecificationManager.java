@@ -1,6 +1,7 @@
 package pl.koder95.bso.repository.book;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -19,21 +20,23 @@ public class BookSpecificationManager implements SpecificationManager<Book> {
         return specificationProviders.stream()
                 .filter(spec -> spec.getParameterName().equals(parameterName))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No specification provider for: " + parameterName
+                ));
     }
 
     @Override
     public Specification<Book> compile(BookSearchParametersDto params) {
         Specification<Book> spec = Specification.unrestricted();
-        if (params.authors() != null && params.authors().length > 0) {
+        if (params.authors() != null && !params.authors().isEmpty()) {
             spec = spec.and(getSpecificationProvider("author")
                     .getSpecification(params));
         }
-        if (params.titles() != null && params.titles().length > 0) {
+        if (params.titles() != null && !params.titles().isEmpty()) {
             spec = spec.and(getSpecificationProvider("title")
                     .getSpecification(params));
         }
-        if (params.isbns() != null && params.isbns().length > 0) {
+        if (params.isbns() != null && !params.isbns().isEmpty()) {
             spec = spec.and(getSpecificationProvider("isbn")
                     .getSpecification(params));
         }
