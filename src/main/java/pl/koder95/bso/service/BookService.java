@@ -2,6 +2,7 @@ package pl.koder95.bso.service;
 
 import java.util.List;
 import pl.koder95.bso.dto.BookDto;
+import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
 
 public interface BookService {
@@ -14,4 +15,6 @@ public interface BookService {
     BookDto update(Long id, CreateBookRequestDto book);
 
     void delete(Long id);
+
+    List<BookDto> search(BookSearchParametersDto params);
 }
