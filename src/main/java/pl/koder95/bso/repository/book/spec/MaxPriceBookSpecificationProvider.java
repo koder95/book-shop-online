@@ -16,6 +16,9 @@ public class MaxPriceBookSpecificationProvider implements SpecificationProvider<
 
     @Override
     public Specification<Book> getSpecification(BookSearchParametersDto params) {
+        if (params == null || params.priceMax() == null) {
+            return Specification.unrestricted();
+        }
         return (root, query, criteriaBuilder) -> criteriaBuilder
                 .lessThanOrEqualTo(root.get("price"), params.priceMax());
     }
