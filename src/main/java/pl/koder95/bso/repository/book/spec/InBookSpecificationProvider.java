@@ -3,13 +3,11 @@ package pl.koder95.bso.repository.book.spec;
 import jakarta.persistence.criteria.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.model.Book;
 import pl.koder95.bso.repository.SpecificationProvider;
 
-@RequiredArgsConstructor
 public abstract class InBookSpecificationProvider implements SpecificationProvider<Book> {
 
     @Override
