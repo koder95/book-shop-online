@@ -27,27 +27,8 @@ public class BookSpecificationManager implements SpecificationManager<Book> {
 
     @Override
     public Specification<Book> compile(BookSearchParametersDto params) {
-        Specification<Book> spec = Specification.unrestricted();
-        if (params.authors() != null && !params.authors().isEmpty()) {
-            spec = spec.and(getSpecificationProvider("author")
-                    .getSpecification(params));
-        }
-        if (params.titles() != null && !params.titles().isEmpty()) {
-            spec = spec.and(getSpecificationProvider("title")
-                    .getSpecification(params));
-        }
-        if (params.isbns() != null && !params.isbns().isEmpty()) {
-            spec = spec.and(getSpecificationProvider("isbn")
-                    .getSpecification(params));
-        }
-        if (params.priceMin() != null) {
-            spec = spec.and(getSpecificationProvider("price-min")
-                    .getSpecification(params));
-        }
-        if (params.priceMax() != null) {
-            spec = spec.and(getSpecificationProvider("price-max")
-                    .getSpecification(params));
-        }
-        return spec;
+        return specificationProviders.stream()
+                .map(p -> p.getSpecification(params))
+                .reduce(Specification.unrestricted(), Specification::and);
     }
 }

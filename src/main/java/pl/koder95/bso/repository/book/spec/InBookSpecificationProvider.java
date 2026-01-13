@@ -1,6 +1,9 @@
 package pl.koder95.bso.repository.book.spec;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,15 +16,26 @@ public abstract class InBookSpecificationProvider implements SpecificationProvid
     @Override
     public Specification<Book> getSpecification(BookSearchParametersDto params) {
         return (root, query, criteriaBuilder) -> {
-            Path<String> paramName = root.get(getParameterName());
-            return getValues(params).stream()
-                    .map(value -> '%' + value.toLowerCase() + '%')
-                    .map(value -> criteriaBuilder.like(criteriaBuilder.lower(paramName), value))
+            String paramName = getParameterName();
+            Path<String> paramNamePath = root.get(paramName);
+            List<String> values = getValues(params);
+            if (values == null || values.isEmpty()) {
+                return likeIgnoreCase(criteriaBuilder, paramNamePath, "");
+            }
+            return values.stream()
+                    .map(value -> likeIgnoreCase(criteriaBuilder, paramNamePath, value))
                     .reduce(criteriaBuilder::or)
                     .orElseThrow(() -> new NoSuchElementException(
-                            "No specification provider for: " + paramName
+                            "No specification provider for parameter: " + paramName
                     ));
         };
+    }
+
+    private static Predicate likeIgnoreCase(CriteriaBuilder criteriaBuilder,
+                                            Path<String> paramNamePath,
+                                            String value) {
+        Expression<String> lowerParamName = criteriaBuilder.lower(paramNamePath);
+        return criteriaBuilder.like(lowerParamName, '%' + value.toLowerCase() + '%');
     }
 
     public abstract List<String> getValues(BookSearchParametersDto params);
