@@ -53,19 +53,21 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     private String getDataProcessingExceptionCauseMessage(Throwable cause) {
         String message = cause.getMessage();
-        if (cause instanceof DataIntegrityViolationException) {
-            message = "Data integrity violation";
-            Throwable nextCause = cause.getCause();
-            Throwable firstCause = nextCause;
-            while (nextCause != null) {
-                nextCause = nextCause.getCause();
-                firstCause = nextCause == null ? firstCause : nextCause;
-            }
-            if (firstCause != null) {
-                message = firstCause.getMessage();
-            }
+        if (cause instanceof DataIntegrityViolationException dive) {
+            message = extractRootCauseMessage(dive, "Data integrity violation");
         }
         return message;
+    }
+
+    private String extractRootCauseMessage(Exception ex, String defaultMessage) {
+        if (ex == null) {
+            return defaultMessage;
+        }
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() instanceof Exception) {
+            root = root.getCause();
+        }
+        return root.getMessage();
     }
 
     @Override
