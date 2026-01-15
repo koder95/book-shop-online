@@ -1,6 +1,7 @@
 package pl.koder95.bso.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
@@ -8,7 +9,7 @@ import pl.koder95.bso.dto.CreateBookRequestDto;
 public interface BookService {
     BookDto save(CreateBookRequestDto book);
     
-    List<BookDto> findAll();
+    Page<BookDto> findAll(Pageable pageable);
 
     BookDto get(Long id);
 
@@ -16,5 +17,5 @@ public interface BookService {
 
     void delete(Long id);
 
-    List<BookDto> search(BookSearchParametersDto params);
+    Page<BookDto> search(BookSearchParametersDto params, Pageable pageable);
 }

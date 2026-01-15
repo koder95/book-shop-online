@@ -1,7 +1,8 @@
 package pl.koder95.bso.service.impl;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.BookSearchParametersDto;
@@ -32,11 +33,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> findAll() {
+    public Page<BookDto> findAll(Pageable pageable) {
         try {
-            return bookRepository.findAll().stream()
-                    .map(bookMapper::toDto)
-                    .toList();
+            return bookRepository.findAll(pageable)
+                    .map(bookMapper::toDto);
         } catch (Exception e) {
             throw new DataProcessingException("Cannot find all books", e);
         }
@@ -77,9 +77,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> search(BookSearchParametersDto params) {
-        return bookRepository.findAll(specificationBuilder.build(params)).stream()
-                .map(bookMapper::toDto)
-                .toList();
+    public Page<BookDto> search(BookSearchParametersDto params, Pageable pageable) {
+        return bookRepository.findAll(specificationBuilder.build(params), pageable)
+                .map(bookMapper::toDto);
     }
 }
