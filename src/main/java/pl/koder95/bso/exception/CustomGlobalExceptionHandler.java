@@ -40,7 +40,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
         if (ex.getCause() != null) {
-            errors.add(getDataProcessingExceptionCauseMessage(ex.getCause()));
+            errors.add(getExceptionCauseMessage(ex.getCause()));
         }
         return new ResponseEntity<>(new UniversalErrorMessageFormat(
                 status.value(),
@@ -51,7 +51,22 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         ), new HttpHeaders(), status);
     }
 
-    private String getDataProcessingExceptionCauseMessage(Throwable cause) {
+    @ExceptionHandler(RegistrationException.class)
+    protected ResponseEntity<Object> handleRegistrationException(
+            RegistrationException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        List<String> errors = new ArrayList<>();
+        errors.add(ex.getMessage());
+        return new ResponseEntity<>(new UniversalErrorMessageFormat(
+                status.value(),
+                "Registration failed",
+                request.getMethod(),
+                request.getRequestURI(),
+                errors
+        ), new HttpHeaders(), status);
+    }
+
+    private String getExceptionCauseMessage(Throwable cause) {
         String message = cause.getMessage();
         if (cause instanceof DataIntegrityViolationException dive) {
             message = extractRootCauseMessage(dive, "Data integrity violation");
