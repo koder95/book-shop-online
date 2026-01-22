@@ -1,5 +1,7 @@
 package pl.koder95.bso.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +12,8 @@ import pl.koder95.bso.dto.UserDto;
 import pl.koder95.bso.exception.RegistrationException;
 import pl.koder95.bso.service.UserService;
 
+@Tag(name = "Authentication management",
+        description = "Provide authentication abilities and user management")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -17,6 +21,7 @@ public class AuthenticationController {
 
     private final UserService userService;
 
+    @Operation(summary = "Register a new user")
     @PostMapping("/registration")
     UserDto register(@Valid RegisterUserRequestDto registerUserRequestDto)
             throws RegistrationException {
