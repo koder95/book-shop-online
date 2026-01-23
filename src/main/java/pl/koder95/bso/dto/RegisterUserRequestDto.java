@@ -21,6 +21,6 @@ public class RegisterUserRequestDto {
     private String password;
     @NotBlank
     @CommonValue
-    private String confirmPassword;
-    private String shoppingAddress;
+    private String repeatPassword;
+    private String shippingAddress;
 }

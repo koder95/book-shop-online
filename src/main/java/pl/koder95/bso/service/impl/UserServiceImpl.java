@@ -24,7 +24,8 @@ public class UserServiceImpl implements UserService {
                     "Email %s already exists".formatted(requestDto.getEmail())
             );
         }
-        return userMapper.toDto(userMapper.toModel(requestDto));
+        User saved = userRepository.save(userMapper.toModel(requestDto));
+        return userMapper.toDto(saved);
     }
 
     @Override
