@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import pl.koder95.bso.config.MapperConfig;
 import pl.koder95.bso.dto.RegisterUserRequestDto;
+import pl.koder95.bso.dto.UpdateUserRequestDto;
 import pl.koder95.bso.dto.UserDto;
 import pl.koder95.bso.model.User;
 
@@ -15,5 +16,5 @@ public interface UserMapper {
 
     UserDto toDto(User user);
 
-    void updateModel(@MappingTarget User model, RegisterUserRequestDto dto);
+    void updateModel(@MappingTarget User model, UpdateUserRequestDto dto);
 }

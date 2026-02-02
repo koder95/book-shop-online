@@ -1,13 +1,11 @@
 package pl.koder95.bso.service.impl;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.koder95.bso.dto.RegisterUserRequestDto;
+import pl.koder95.bso.dto.UpdateUserRequestDto;
 import pl.koder95.bso.dto.UserDto;
 import pl.koder95.bso.exception.RegistrationException;
 import pl.koder95.bso.mapper.UserMapper;
@@ -41,9 +39,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(Long id, RegisterUserRequestDto dto) {
+    public UserDto update(Long id, UpdateUserRequestDto dto) {
         User user = userRepository.getReferenceById(id);
         userMapper.updateModel(user, dto);
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
+        }
         return userMapper.toDto(userRepository.save(user));
     }
 
@@ -55,18 +56,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDto> findByEmail(String email) {
         return userRepository.findByEmail(email).map(userMapper::toDto);
-    }
-
-    @Component
-    public static class PasswordEncoder {
-        public String encode(String password) {
-            MessageDigest md;
-            try {
-                md = MessageDigest.getInstance("sha-512");
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-            return Base64.getEncoder().encodeToString(md.digest(password.getBytes()));
-        }
     }
 }
