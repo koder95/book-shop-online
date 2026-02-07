@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.koder95.bso.dto.UserRegistrationRequestDto;
 import pl.koder95.bso.dto.UserResponseDto;
+import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.exception.RegistrationException;
 import pl.koder95.bso.mapper.UserMapper;
 import pl.koder95.bso.model.User;
@@ -35,7 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto get(Long id) {
-        return userMapper.toDto(userRepository.getReferenceById(id));
+        return userMapper.toDto(userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"))
+        );
     }
 
     @Override
