@@ -7,7 +7,7 @@ import pl.koder95.bso.dto.validation.FieldMatch;
 
 @Data
 @FieldMatch(first = "password", second = "repeatPassword")
-public class RegisterUserRequestDto {
+public class UserRegistrationRequestDto {
     @NotBlank
     private String firstName;
     @NotBlank

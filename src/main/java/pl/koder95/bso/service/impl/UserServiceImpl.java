@@ -4,8 +4,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.koder95.bso.dto.RegisterUserRequestDto;
 import pl.koder95.bso.dto.UpdateUserRequestDto;
+import pl.koder95.bso.dto.UserRegistrationRequestDto;
 import pl.koder95.bso.dto.UserResponseDto;
 import pl.koder95.bso.exception.RegistrationException;
 import pl.koder95.bso.mapper.UserMapper;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserResponseDto register(RegisterUserRequestDto requestDto)
+    public UserResponseDto register(UserRegistrationRequestDto requestDto)
             throws RegistrationException {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException(
