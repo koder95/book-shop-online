@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.koder95.bso.dto.RegisterUserRequestDto;
-import pl.koder95.bso.dto.UserDto;
+import pl.koder95.bso.dto.UserResponseDto;
 import pl.koder95.bso.exception.RegistrationException;
 import pl.koder95.bso.service.UserService;
 
@@ -24,8 +24,8 @@ public class AuthenticationController {
 
     @Operation(summary = "Register a new user")
     @PostMapping("/registration")
-    public UserDto register(@Valid @RequestBody RegisterUserRequestDto registerUserRequestDto)
+    public UserResponseDto register(@Valid @RequestBody RegisterUserRequestDto requestDto)
             throws RegistrationException {
-        return userService.register(registerUserRequestDto);
+        return userService.register(requestDto);
     }
 }

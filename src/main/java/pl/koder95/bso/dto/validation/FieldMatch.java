@@ -10,12 +10,15 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = CommonValueValidator.class)
+@Constraint(validatedBy = FieldMatchValidator.class)
 @Documented
-public @interface ValidateCommonValues {
+public @interface FieldMatch {
 
     String message() default "Fields must have the same value";
 
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+
+    String first();
+    String second();
 }

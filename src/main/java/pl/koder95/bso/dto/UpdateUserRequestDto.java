@@ -1,14 +1,13 @@
 package pl.koder95.bso.dto;
 
-import pl.koder95.bso.dto.validation.CommonValue;
-import pl.koder95.bso.dto.validation.ValidateCommonValues;
+import pl.koder95.bso.dto.validation.FieldMatch;
 
-@ValidateCommonValues
+@FieldMatch(first = "password", second = "repeatPassword")
 public record UpdateUserRequestDto(
         String firstName,
         String lastName,
-        @CommonValue String password,
-        @CommonValue String repeatPassword,
+        String password,
+        String repeatPassword,
         String shippingAddress
 ) {
 }
