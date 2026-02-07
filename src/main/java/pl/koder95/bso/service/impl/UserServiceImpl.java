@@ -4,7 +4,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.koder95.bso.dto.UpdateUserRequestDto;
 import pl.koder95.bso.dto.UserRegistrationRequestDto;
 import pl.koder95.bso.dto.UserResponseDto;
 import pl.koder95.bso.exception.RegistrationException;
@@ -37,16 +36,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto get(Long id) {
         return userMapper.toDto(userRepository.getReferenceById(id));
-    }
-
-    @Override
-    public UserResponseDto update(Long id, UpdateUserRequestDto dto) {
-        User user = userRepository.getReferenceById(id);
-        userMapper.updateModel(user, dto);
-        if (dto.password() != null && !dto.password().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.password()));
-        }
-        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
