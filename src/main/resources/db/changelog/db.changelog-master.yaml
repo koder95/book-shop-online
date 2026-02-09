@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changes/000-create-books-table.yml
+  - include:
+      file: db/changelog/changes/001-create-users-table.yml
