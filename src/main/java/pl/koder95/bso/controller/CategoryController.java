@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.koder95.bso.dto.BookDtoWithoutCategoryIds;
 import pl.koder95.bso.dto.CategoryDto;
+import pl.koder95.bso.service.BookService;
 import pl.koder95.bso.service.CategoryService;
 
 @Tag(name = "Category management", description = "Endpoints for managing categories")
@@ -18,6 +19,7 @@ import pl.koder95.bso.service.CategoryService;
 @RequestMapping("/api/categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final BookService bookService;
 
     @Operation(
             summary = "Create a new category",
@@ -75,6 +77,6 @@ public class CategoryController {
     public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(
             @PathVariable Long id, @ParameterObject Pageable pageable
     ) {
-        return Page.empty();
+        return bookService.findAllByCategoryId(id, pageable);
     }
 }

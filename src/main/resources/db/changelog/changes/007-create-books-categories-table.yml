@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-create-books-categories-table
+      author: kmularski
+      changes:
+        - createTable:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_bc_book
+                    referencedTableName: books
+                    referencedColumnNames: id
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_bc_category
+                    referencedTableName: categories
+                    referencedColumnNames: id
+        - addPrimaryKey:
+            tableName: books_categories
+            columnNames: book_id, category_id

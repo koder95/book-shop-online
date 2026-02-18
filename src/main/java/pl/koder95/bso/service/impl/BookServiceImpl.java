@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.koder95.bso.dto.BookDto;
+import pl.koder95.bso.dto.BookDtoWithoutCategoryIds;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
 import pl.koder95.bso.exception.DataProcessingException;
@@ -80,5 +81,11 @@ public class BookServiceImpl implements BookService {
     public Page<BookDto> search(BookSearchParametersDto params, Pageable pageable) {
         return bookRepository.findAll(specificationBuilder.build(params), pageable)
                 .map(bookMapper::toDto);
+    }
+
+    @Override
+    public Page<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId, Pageable pageable) {
+        return bookRepository.findAllByCategoryId(categoryId, pageable)
+                .map(bookMapper::toDtoWithoutCategories);
     }
 }
