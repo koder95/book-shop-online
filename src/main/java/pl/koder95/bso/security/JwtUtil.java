@@ -1,12 +1,10 @@
 package pl.koder95.bso.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,24 +29,26 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean isValidToken(String token) {
-        Jws<Claims> claimsJwts = Jwts.parser()
-                .decryptWith(secret)
-                .build()
-                .parseSignedClaims(token);
-        return !claimsJwts.getPayload().getExpiration().before(new Date());
+    public VerifiedToken verifyToken(String token) {
+        if (token == null || token.isBlank()) {
+            return new VerifiedToken("", "", false);
+        }
+        Claims claims = getClaims(token);
+        return new VerifiedToken(
+                token,
+                claims.getSubject(),
+                claims.getExpiration().before(new Date())
+        );
     }
 
-    public String getUserName(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
-    }
-
-    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = Jwts.parser()
-                .decryptWith(secret)
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secret)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return claimsResolver.apply(claims);
+    }
+
+    public record VerifiedToken(String token, String username, boolean accepted) {
     }
 }
