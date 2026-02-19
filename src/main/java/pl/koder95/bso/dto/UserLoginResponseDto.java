@@ -1,4 +1,6 @@
 package pl.koder95.bso.dto;
 
-public record UserLoginResponseDto(String token) {
+import jakarta.validation.constraints.NotBlank;
+
+public record UserLoginResponseDto(@NotBlank String token) {
 }
