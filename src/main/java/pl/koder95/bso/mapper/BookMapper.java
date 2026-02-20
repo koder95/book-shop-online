@@ -1,6 +1,7 @@
 package pl.koder95.bso.mapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -20,7 +21,8 @@ public interface BookMapper {
 
     Book toModel(BookDto dto);
 
-    void updateModel(@MappingTarget Book model, CreateBookRequestDto dto);
+    void updateModel(@MappingTarget Book model, CreateBookRequestDto dto,
+                     @Context List<Category> allById);
 
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
 
@@ -31,5 +33,10 @@ public interface BookMapper {
                 .distinct()
                 .toList()
         );
+    }
+
+    @AfterMapping
+    default void setCategories(@MappingTarget Book book, @Context List<Category> allById) {
+        book.setCategories(allById.stream().collect(Collectors.toUnmodifiableSet()));
     }
 }
