@@ -37,7 +37,7 @@ public class JwtUtil {
         return new VerifiedToken(
                 token,
                 claims.getSubject(),
-                claims.getExpiration().before(new Date())
+                claims.getExpiration().after(new Date())
         );
     }
 
