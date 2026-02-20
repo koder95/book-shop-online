@@ -1,6 +1,8 @@
 package pl.koder95.bso.mapper;
 
+import java.util.List;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import pl.koder95.bso.config.MapperConfig;
@@ -14,7 +16,7 @@ import pl.koder95.bso.model.Category;
 public interface BookMapper {
     BookDto toDto(Book book);
 
-    Book toModel(CreateBookRequestDto dto);
+    Book toModel(CreateBookRequestDto book, @Context List<Category> allById);
 
     Book toModel(BookDto dto);
 

@@ -11,6 +11,6 @@ import pl.koder95.bso.model.Book;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>,
                                         JpaSpecificationExecutor<Book> {
-    @Query("FROM Book b JOIN FETCH b.categories WHERE b.category_id = :categoryId")
+    @Query("FROM Book b JOIN FETCH b.categories c WHERE c.id = :categoryId")
     Page<Book> findAllByCategoryId(Long categoryId, Pageable pageable);
 }

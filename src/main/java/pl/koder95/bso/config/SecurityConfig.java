@@ -1,5 +1,7 @@
 package pl.koder95.bso.config;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,9 @@ import pl.koder95.bso.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
+@SecurityScheme(type = SecuritySchemeType.HTTP, name = "bearer-key",
+        description = "authorization with JWT token", scheme = "bearer",
+        bearerFormat = "JWT")
 @RequiredArgsConstructor
 public class SecurityConfig {
 

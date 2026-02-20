@@ -1,5 +1,6 @@
 package pl.koder95.bso.service.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,9 @@ import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.BookMapper;
 import pl.koder95.bso.model.Book;
+import pl.koder95.bso.model.Category;
 import pl.koder95.bso.repository.BookRepository;
+import pl.koder95.bso.repository.CategoryRepository;
 import pl.koder95.bso.repository.SpecificationBuilder;
 import pl.koder95.bso.service.BookService;
 
@@ -22,11 +25,13 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final SpecificationBuilder<Book> specificationBuilder;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public BookDto save(CreateBookRequestDto book) {
         try {
-            Book saved = bookRepository.save(bookMapper.toModel(book));
+            List<Category> allById = categoryRepository.findAllById(book.getCategoryIds());
+            Book saved = bookRepository.save(bookMapper.toModel(book, allById));
             return bookMapper.toDto(saved);
         } catch (Exception e) {
             throw new DataProcessingException("Cannot save book: " + book, e);
