@@ -1,7 +1,7 @@
 package pl.koder95.bso.mapper;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -37,6 +37,6 @@ public interface BookMapper {
 
     @AfterMapping
     default void setCategories(@MappingTarget Book book, @Context List<Category> allById) {
-        book.setCategories(allById.stream().collect(Collectors.toUnmodifiableSet()));
+        book.setCategories(new HashSet<>(allById));
     }
 }
