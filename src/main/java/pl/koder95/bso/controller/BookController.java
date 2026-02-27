@@ -1,6 +1,7 @@
 package pl.koder95.bso.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
 import pl.koder95.bso.service.BookService;
 
+@SecurityRequirement(name = "bearer-key")
 @Tag(name = "Book management", description = "Endpoints for managing books")
 @RestController
 @RequiredArgsConstructor

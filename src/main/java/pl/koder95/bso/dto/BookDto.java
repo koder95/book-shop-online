@@ -1,6 +1,7 @@
 package pl.koder95.bso.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -12,4 +13,5 @@ public class BookDto {
     private BigDecimal price;
     private String description;
     private String coverImage;
+    private List<Long> categoryIds;
 }
