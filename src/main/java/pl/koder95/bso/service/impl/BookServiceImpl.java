@@ -1,6 +1,7 @@
 package pl.koder95.bso.service.impl;
 
 import java.util.List;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto save(CreateBookRequestDto book) {
         try {
+            List<Long> notExists = book.getCategoryIds().stream()
+                    .filter(Predicate.not(categoryRepository::existsById))
+                    .toList();
+            if (!notExists.isEmpty()) {
+                throw new EntityNotFoundException("Category ids not found: " + notExists);
+            }
             List<Category> allById = categoryRepository.findAllById(book.getCategoryIds());
             Book saved = bookRepository.save(bookMapper.toModel(book, allById));
             return bookMapper.toDto(saved);
@@ -92,7 +99,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Page<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId, Pageable pageable) {
-        return bookRepository.findAllByCategoryId(categoryId, pageable)
+        return bookRepository.findAllByCategories_Id(categoryId, pageable)
                 .map(bookMapper::toDtoWithoutCategories);
     }
 }
