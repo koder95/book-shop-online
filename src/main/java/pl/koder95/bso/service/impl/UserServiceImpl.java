@@ -1,6 +1,7 @@
 package pl.koder95.bso.service.impl;
 
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,10 @@ import pl.koder95.bso.dto.UserResponseDto;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.exception.RegistrationException;
 import pl.koder95.bso.mapper.UserMapper;
+import pl.koder95.bso.model.Role;
+import pl.koder95.bso.model.RoleName;
 import pl.koder95.bso.model.User;
+import pl.koder95.bso.repository.RoleRepository;
 import pl.koder95.bso.repository.UserRepository;
 import pl.koder95.bso.service.UserService;
 
@@ -17,6 +21,7 @@ import pl.koder95.bso.service.UserService;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -29,6 +34,7 @@ public class UserServiceImpl implements UserService {
             );
         }
         User model = userMapper.toModel(requestDto);
+        model.setRoles(Set.of(roleRepository.findByName(RoleName.ROLE_USER)));
         model.setPassword(passwordEncoder.encode(model.getPassword()));
         User saved = userRepository.save(model);
         return userMapper.toDto(saved);
