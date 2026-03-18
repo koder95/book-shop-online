@@ -3,6 +3,7 @@ package pl.koder95.bso.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import pl.koder95.bso.model.Book;
 import pl.koder95.bso.model.CartItem;
 import pl.koder95.bso.model.ShoppingCart;
 import pl.koder95.bso.model.User;
+import pl.koder95.bso.repository.BookRepository;
 import pl.koder95.bso.repository.CartItemRepository;
 import pl.koder95.bso.repository.ShoppingCartRepository;
 import pl.koder95.bso.service.ShoppingCartService;
@@ -31,17 +33,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
     private final CartItemMapper cartItemMapper;
+    private final BookRepository bookRepository;
     private final CartItemRepository cartItemRepository;
     private final ShoppingCartFactory shoppingCartFactory;
 
     private ShoppingCart createShoppingCart() {
-        ShoppingCart created = shoppingCartFactory.createShoppingCart(getAuthentication());
+        ShoppingCart created = shoppingCartFactory.createShoppingCart(getAuthenticatedUser());
         shoppingCartRepository.save(created);
         return created;
     }
 
     private ShoppingCart getOrCreateShoppingCart() {
-        return shoppingCartRepository.findById(getAuthentication().getId())
+        return shoppingCartRepository.findById(getAuthenticatedUser().getId())
                 .orElseGet(this::createShoppingCart);
     }
 
@@ -54,7 +57,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartResponseDto addItem(CartItemRequestDto cartItemDto) {
-        CartItem item = cartItemMapper.toModel(cartItemDto);
+        Book book = bookRepository.findById(cartItemDto.bookId()).orElseThrow(
+                () -> new NoSuchElementException(
+                        "Cannot find a book with id: " + cartItemDto.bookId()
+                )
+        );
+        CartItem item = cartItemMapper.toModel(cartItemDto, book);
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
         shoppingCart.setCartItems(normalizeCartItems(item, shoppingCart));
         ShoppingCart saved = shoppingCartRepository.save(shoppingCart);
@@ -107,11 +115,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (cartItem.isPresent()) {
             authorizeCartItemAccess(cartItem.get());
             cartItemRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Cannot find cart item id: " + id);
         }
     }
 
     private static void authorizeCartItemAccess(CartItem cartItem) {
-        User user = getAuthentication();
+        User user = getAuthenticatedUser();
         if (!cartItem.getShoppingCart().getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Item is not in shopping cart maintained by user: " + user.getEmail()
@@ -119,7 +129,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
 
-    private static User getAuthentication() {
+    private static User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new IllegalStateException("Authentication object is null");
