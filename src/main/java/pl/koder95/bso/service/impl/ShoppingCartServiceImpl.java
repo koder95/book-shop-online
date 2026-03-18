@@ -51,7 +51,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartResponseDto getShoppingCart() {
-        return shoppingCartMapper.toResponseDto(getOrCreateShoppingCart());
+        ShoppingCart shoppingCart = getOrCreateShoppingCart();
+        return shoppingCartMapper.toResponseDto(shoppingCart, shoppingCart.getCartItems().stream()
+                .map(cartItemMapper::toResponseDto)
+                .toList());
     }
 
     @Override
@@ -66,7 +69,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
         shoppingCart.setCartItems(normalizeCartItems(item, shoppingCart));
         ShoppingCart saved = shoppingCartRepository.save(shoppingCart);
-        return shoppingCartMapper.toResponseDto(saved);
+        return shoppingCartMapper.toResponseDto(saved, saved.getCartItems().stream()
+                .map(cartItemMapper::toResponseDto)
+                .toList());
     }
 
     private Set<CartItem> normalizeCartItems(CartItem item, ShoppingCart shoppingCart) {
@@ -105,7 +110,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         authorizeCartItemAccess(cartItem);
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
-        return shoppingCartMapper.toResponseDto(getOrCreateShoppingCart());
+        ShoppingCart shoppingCart = getOrCreateShoppingCart();
+        return shoppingCartMapper.toResponseDto(shoppingCart, shoppingCart.getCartItems().stream()
+                .map(cartItemMapper::toResponseDto)
+                .toList());
     }
 
     @Override
