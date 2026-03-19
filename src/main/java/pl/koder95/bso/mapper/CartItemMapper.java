@@ -3,6 +3,7 @@ package pl.koder95.bso.mapper;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import pl.koder95.bso.config.MapperConfig;
 import pl.koder95.bso.dto.CartItemRequestDto;
@@ -16,10 +17,12 @@ public interface CartItemMapper {
     CartItem toModel(CartItemRequestDto cartItemDto,
                      @Context Book book, @Context ShoppingCart shoppingCart);
 
+    @Mapping(target = "bookId", source = "book.id")
+    @Mapping(target = "bookTitle", source = "book.title")
     CartItemResponseDto toResponseDto(CartItem cartItem);
 
     @AfterMapping
-    default void setBook(@MappingTarget CartItem cartItem, Book book, ShoppingCart shoppingCart) {
+    default void setBook(@MappingTarget CartItem cartItem, @Context Book book, @Context ShoppingCart shoppingCart) {
         cartItem.setBook(book);
         cartItem.setShoppingCart(shoppingCart);
     }

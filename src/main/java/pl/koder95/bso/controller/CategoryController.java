@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.koder95.bso.dto.BookDtoWithoutCategoryIds;
-import pl.koder95.bso.dto.CategoryDto;
+import pl.koder95.bso.dto.CategoryResponseDto;
+import pl.koder95.bso.dto.CreateCategoryRequestDto;
+import pl.koder95.bso.dto.UpdateCategoryDto;
 import pl.koder95.bso.service.BookService;
 import pl.koder95.bso.service.CategoryService;
 
@@ -37,7 +39,9 @@ public class CategoryController {
     )
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryDto createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+    public CategoryResponseDto createCategory(
+            @Valid @RequestBody CreateCategoryRequestDto categoryDto
+    ) {
         return categoryService.save(categoryDto);
     }
 
@@ -47,7 +51,7 @@ public class CategoryController {
     )
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public Page<CategoryDto> getAll(@ParameterObject Pageable pageable) {
+    public Page<CategoryResponseDto> getAll(@ParameterObject Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
@@ -57,7 +61,7 @@ public class CategoryController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public CategoryDto getCategoryById(@PathVariable Long id) {
+    public CategoryResponseDto getCategoryById(@PathVariable Long id) {
         return categoryService.getById(id);
     }
 
@@ -67,8 +71,8 @@ public class CategoryController {
     )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryDto updateCategory(@PathVariable Long id,
-                                  @Valid @RequestBody CategoryDto categoryDto) {
+    public CategoryResponseDto updateCategory(@PathVariable Long id,
+                                            @Valid @RequestBody UpdateCategoryDto categoryDto) {
         return categoryService.update(id, categoryDto);
     }
 

@@ -2,16 +2,18 @@ package pl.koder95.bso.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.koder95.bso.dto.CategoryDto;
+import pl.koder95.bso.dto.CategoryResponseDto;
+import pl.koder95.bso.dto.CreateCategoryRequestDto;
+import pl.koder95.bso.dto.UpdateCategoryDto;
 
 public interface CategoryService {
-    Page<CategoryDto> findAll(Pageable pageable);
+    Page<CategoryResponseDto> findAll(Pageable pageable);
 
-    CategoryDto getById(Long id);
+    CategoryResponseDto getById(Long id);
 
-    CategoryDto save(CategoryDto categoryDto);
+    CategoryResponseDto save(CreateCategoryRequestDto categoryDto);
 
-    CategoryDto update(Long id, CategoryDto categoryDto);
+    CategoryResponseDto update(Long id, UpdateCategoryDto categoryDto);
 
     void deleteById(Long id);
 }

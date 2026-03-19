@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pl.koder95.bso.dto.CategoryDto;
+import pl.koder95.bso.dto.CategoryResponseDto;
+import pl.koder95.bso.dto.CreateCategoryRequestDto;
+import pl.koder95.bso.dto.UpdateCategoryDto;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.CategoryMapper;
 import pl.koder95.bso.model.Category;
@@ -18,34 +20,34 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public Page<CategoryDto> findAll(Pageable pageable) {
+    public Page<CategoryResponseDto> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable)
-                .map(categoryMapper::toDto);
+                .map(categoryMapper::toResponseDto);
     }
 
     @Override
-    public CategoryDto getById(Long id) {
+    public CategoryResponseDto getById(Long id) {
         return categoryRepository.findById(id)
-                .map(categoryMapper::toDto)
+                .map(categoryMapper::toResponseDto)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Cannot find a category by id: " + id)
                 );
     }
 
     @Override
-    public CategoryDto save(CategoryDto categoryDto) {
-        return categoryMapper.toDto(
+    public CategoryResponseDto save(CreateCategoryRequestDto categoryDto) {
+        return categoryMapper.toResponseDto(
                 categoryRepository.save(categoryMapper.toModel(categoryDto))
         );
     }
 
     @Override
-    public CategoryDto update(Long id, CategoryDto categoryDto) {
+    public CategoryResponseDto update(Long id, UpdateCategoryDto categoryDto) {
         Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Cannot find a category by id: " + id)
         );
         categoryMapper.updateModel(category, categoryDto);
-        return categoryMapper.toDto(categoryRepository.save(category));
+        return categoryMapper.toResponseDto(categoryRepository.save(category));
     }
 
     @Override
