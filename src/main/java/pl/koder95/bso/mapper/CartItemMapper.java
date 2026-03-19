@@ -9,15 +9,18 @@ import pl.koder95.bso.dto.CartItemRequestDto;
 import pl.koder95.bso.dto.CartItemResponseDto;
 import pl.koder95.bso.model.Book;
 import pl.koder95.bso.model.CartItem;
+import pl.koder95.bso.model.ShoppingCart;
 
 @Mapper(config = MapperConfig.class)
 public interface CartItemMapper {
-    CartItem toModel(CartItemRequestDto cartItemDto, @Context Book book);
+    CartItem toModel(CartItemRequestDto cartItemDto,
+                     @Context Book book, @Context ShoppingCart shoppingCart);
 
     CartItemResponseDto toResponseDto(CartItem cartItem);
 
     @AfterMapping
-    default void setBook(@MappingTarget CartItem cartItem, @Context Book book) {
+    default void setBook(@MappingTarget CartItem cartItem, Book book, ShoppingCart shoppingCart) {
         cartItem.setBook(book);
+        cartItem.setShoppingCart(shoppingCart);
     }
 }

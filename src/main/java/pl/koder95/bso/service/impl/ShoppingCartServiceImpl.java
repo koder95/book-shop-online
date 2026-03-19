@@ -65,8 +65,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         "Cannot find a book with id: " + cartItemDto.bookId()
                 )
         );
-        CartItem item = cartItemMapper.toModel(cartItemDto, book);
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
+        CartItem item = cartItemMapper.toModel(cartItemDto, book, shoppingCart);
         shoppingCart.setCartItems(normalizeCartItems(item, shoppingCart));
         ShoppingCart saved = shoppingCartRepository.save(shoppingCart);
         return shoppingCartMapper.toResponseDto(saved, saved.getCartItems().stream()
