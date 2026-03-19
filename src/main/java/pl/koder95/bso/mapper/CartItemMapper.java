@@ -22,7 +22,8 @@ public interface CartItemMapper {
     CartItemResponseDto toResponseDto(CartItem cartItem);
 
     @AfterMapping
-    default void setBook(@MappingTarget CartItem cartItem, @Context Book book, @Context ShoppingCart shoppingCart) {
+    default void setBook(@MappingTarget CartItem cartItem, @Context Book book,
+                         @Context ShoppingCart shoppingCart) {
         cartItem.setBook(book);
         cartItem.setShoppingCart(shoppingCart);
     }

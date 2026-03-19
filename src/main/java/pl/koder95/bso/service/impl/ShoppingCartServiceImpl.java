@@ -67,6 +67,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         );
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
         CartItem item = cartItemMapper.toModel(cartItemDto, book, shoppingCart);
+        item = cartItemRepository.findFirstByShoppingCartAndBook(shoppingCart, book).orElse(item);
         shoppingCart.setCartItems(normalizeCartItems(item, shoppingCart));
         ShoppingCart saved = shoppingCartRepository.save(shoppingCart);
         return shoppingCartMapper.toResponseDto(saved, saved.getCartItems().stream()
@@ -85,9 +86,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private CartItem reduceToOneItem(Book book, Set<CartItem> cartItems) {
-        List<CartItem> cartItemWithTheSameBook = cartItems.stream()
+        List<CartItem> cartItemWithTheSameBook = new ArrayList<>(cartItems.stream()
                 .filter(cartItem -> cartItem.getBook().equals(book))
-                .toList();
+                .toList());
         CartItem first = cartItemWithTheSameBook.removeFirst();
         cartItems.remove(first);
         if (!cartItemWithTheSameBook.isEmpty()) {
