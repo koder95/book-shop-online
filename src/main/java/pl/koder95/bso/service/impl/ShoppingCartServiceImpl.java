@@ -1,11 +1,6 @@
 package pl.koder95.bso.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -52,55 +47,31 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartResponseDto getShoppingCart() {
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
-        return shoppingCartMapper.toResponseDto(shoppingCart, shoppingCart.getCartItems().stream()
-                .map(cartItemMapper::toResponseDto)
-                .toList());
+        return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
     @Override
     @Transactional
     public ShoppingCartResponseDto addItem(CartItemRequestDto cartItemDto) {
         Book book = bookRepository.findById(cartItemDto.bookId()).orElseThrow(
-                () -> new NoSuchElementException(
+                () -> new EntityNotFoundException(
                         "Cannot find a book with id: " + cartItemDto.bookId()
                 )
         );
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
         CartItem item = cartItemMapper.toModel(cartItemDto, book, shoppingCart);
-        item = cartItemRepository.findFirstByShoppingCartAndBook(shoppingCart, book).orElse(item);
-        shoppingCart.setCartItems(normalizeCartItems(item, shoppingCart));
-        ShoppingCart saved = shoppingCartRepository.save(shoppingCart);
-        return shoppingCartMapper.toResponseDto(saved, saved.getCartItems().stream()
-                .map(cartItemMapper::toResponseDto)
-                .toList());
-    }
-
-    private Set<CartItem> normalizeCartItems(CartItem item, ShoppingCart shoppingCart) {
-        HashSet<CartItem> cartItems = new HashSet<>(shoppingCart.getCartItems());
-        if (cartItems.contains(item)) {
-            item = reduceToOneItem(item.getBook(), cartItems);
+        Optional<CartItem> first = cartItemRepository
+                .findFirstByShoppingCartAndBook(shoppingCart, book);
+        if (first.isPresent()) {
+            Integer quantity = item.getQuantity();
+            quantity = quantity == null ? 0 : quantity; // preventing NPE
+            item = first.get();
+            item.setQuantity(item.getQuantity() + quantity);
         }
         cartItemRepository.save(item);
-        cartItems.add(item);
-        return cartItems;
-    }
-
-    private CartItem reduceToOneItem(Book book, Set<CartItem> cartItems) {
-        List<CartItem> cartItemWithTheSameBook = new ArrayList<>(cartItems.stream()
-                .filter(cartItem -> cartItem.getBook().equals(book))
-                .toList());
-        CartItem first = cartItemWithTheSameBook.removeFirst();
-        cartItems.remove(first);
-        if (!cartItemWithTheSameBook.isEmpty()) {
-            List<CartItem> toRemove = new ArrayList<>();
-            cartItemWithTheSameBook.forEach(cart -> {
-                cartItems.remove(cart);
-                toRemove.add(cart);
-                first.setQuantity(first.getQuantity() + cart.getQuantity());
-            });
-            cartItemRepository.deleteAll(toRemove);
-        }
-        return first;
+        shoppingCart.getCartItems().add(item);
+        ShoppingCart saved = shoppingCartRepository.save(shoppingCart);
+        return shoppingCartMapper.toResponseDto(saved);
     }
 
     @Override
@@ -112,9 +83,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
         ShoppingCart shoppingCart = getOrCreateShoppingCart();
-        return shoppingCartMapper.toResponseDto(shoppingCart, shoppingCart.getCartItems().stream()
-                .map(cartItemMapper::toResponseDto)
-                .toList());
+        return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
     @Override
