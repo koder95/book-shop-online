@@ -3,7 +3,6 @@ package pl.koder95.bso.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,7 +25,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         HttpStatus status = HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(new UniversalErrorMessageFormat(
                 status.value(),
-                "Entity not found",
+                status.getReasonPhrase(),
                 request.getMethod(),
                 request.getRequestURI(),
                 List.of(ex.getMessage())
@@ -36,15 +35,12 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler(DataProcessingException.class)
     protected ResponseEntity<Object> handleDataProcessingException(
             DataProcessingException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus status = HttpStatus.CONFLICT;
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
-        if (ex.getCause() != null) {
-            errors.add(getExceptionCauseMessage(ex.getCause()));
-        }
         return new ResponseEntity<>(new UniversalErrorMessageFormat(
                 status.value(),
-                "Data processing failed",
+                status.getReasonPhrase(),
                 request.getMethod(),
                 request.getRequestURI(),
                 errors
@@ -59,42 +55,24 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         errors.add(ex.getMessage());
         return new ResponseEntity<>(new UniversalErrorMessageFormat(
                 status.value(),
-                "Registration failed",
+                status.getReasonPhrase(),
                 request.getMethod(),
                 request.getRequestURI(),
                 errors
         ), new HttpHeaders(), status);
     }
 
-    private String getExceptionCauseMessage(Throwable cause) {
-        String message = cause.getMessage();
-        if (cause instanceof DataIntegrityViolationException dive) {
-            message = extractRootCauseMessage(dive, "Data integrity violation");
-        }
-        return message;
-    }
-
-    private String extractRootCauseMessage(Exception ex, String defaultMessage) {
-        if (ex == null) {
-            return defaultMessage;
-        }
-        Throwable root = ex;
-        while (root.getCause() != null && root.getCause() instanceof Exception) {
-            root = root.getCause();
-        }
-        return root.getMessage();
-    }
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             HttpHeaders headers,
-            HttpStatusCode status,
+            HttpStatusCode httpStatusCode,
             WebRequest request) {
+        HttpStatus status = HttpStatus.valueOf(httpStatusCode.value());
         HttpServletRequest servletRequest = ((ServletWebRequest) request).getRequest();
         return new ResponseEntity<>(new UniversalErrorMessageFormat(
                 status.value(),
-                "Method argument is not valid",
+                status.getReasonPhrase(),
                 servletRequest.getMethod(),
                 servletRequest.getRequestURI(),
                 ex.getBindingResult().getAllErrors().stream()
