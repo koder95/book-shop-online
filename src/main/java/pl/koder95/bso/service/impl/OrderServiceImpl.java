@@ -6,14 +6,17 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.koder95.bso.dto.CreateOrderRequestDto;
 import pl.koder95.bso.dto.OrderItemResponseDto;
 import pl.koder95.bso.dto.OrderResponseDto;
 import pl.koder95.bso.dto.OrderStatusUpdateDto;
+import pl.koder95.bso.exception.CreateOrderException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.OrderItemMapper;
 import pl.koder95.bso.mapper.OrderMapper;
@@ -45,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public OrderResponseDto create(CreateOrderRequestDto dto) {
         User user = getAuthenticatedUser();
@@ -54,10 +58,10 @@ public class OrderServiceImpl implements OrderService {
         authorizeCartAccess(shoppingCart);
         Order order = orderMapper.toModel(dto, shoppingCart);
         if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
-            throw new EntityNotFoundException("Cannot find order items for authenticated user");
+            throw new CreateOrderException("Cannot create order without order items. Add a item to "
+                    + "shopping cart at first.");
         }
         Order saved = orderRepository.save(order);
-        orderItemRepository.saveAll(order.getOrderItems());
         clearCart(shoppingCart);
         return orderMapper.toResponseDto(saved);
     }
@@ -73,6 +77,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Order not found with id: " + id)
         );
+        authorizeOrderAccess(order);
         orderMapper.updateModel(order, dto);
         return orderMapper.toResponseDto(orderRepository.save(order));
     }
@@ -82,6 +87,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new EntityNotFoundException("Order not found with id: " + orderId)
         );
+        authorizeOrderAccess(order);
         OrderResponseDto orderResponseDto = orderMapper.toResponseDto(order);
         return Set.copyOf(orderResponseDto.orderItems());
     }
@@ -91,10 +97,12 @@ public class OrderServiceImpl implements OrderService {
         OrderItem item = orderItemRepository.findById(itemId).orElseThrow(
                 () -> new EntityNotFoundException("Item not found with id: " + itemId)
         );
-        if (!item.getOrder().getId().equals(orderId)) {
+        Order order = item.getOrder();
+        if (!order.getId().equals(orderId)) {
             throw new EntityNotFoundException("The item (#" + itemId + ") is not included "
                     + " in the order (#" + orderId + ")");
         }
+        authorizeOrderAccess(order);
         return orderItemMapper.toResponseDto(item);
     }
 
@@ -103,6 +111,15 @@ public class OrderServiceImpl implements OrderService {
         if (!cart.getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Cart is not maintained by authenticated user"
+            );
+        }
+    }
+
+    private static void authorizeOrderAccess(Order order) {
+        User user = getAuthenticatedUser();
+        if (!order.getUser().equals(user)) {
+            throw new AccessDeniedException(
+                    "Order is not maintained by authenticated user"
             );
         }
     }

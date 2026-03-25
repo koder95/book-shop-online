@@ -19,17 +19,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    protected ResponseEntity<Object> handleEntityNotFoundException(
-            EntityNotFoundException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.NOT_FOUND;
+    private static ResponseEntity<Object> createUniversalErrorMessageFormat(
+            HttpServletRequest request, HttpStatus status, List<String> errors, HttpHeaders headers
+    ) {
         return new ResponseEntity<>(new UniversalErrorMessageFormat(
                 status.value(),
                 status.getReasonPhrase(),
                 request.getMethod(),
                 request.getRequestURI(),
-                List.of(ex.getMessage())
-        ), new HttpHeaders(), status);
+                errors
+        ), headers, status);
+    }
+
+    private static ResponseEntity<Object> createUniversalErrorMessageFormat(
+            HttpServletRequest request, HttpStatus status, List<String> errors
+    ) {
+        return createUniversalErrorMessageFormat(request, status, errors, new HttpHeaders());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFoundException(
+            EntityNotFoundException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return createUniversalErrorMessageFormat(request, status, List.of(ex.getMessage()));
     }
 
     @ExceptionHandler(DataProcessingException.class)
@@ -38,13 +50,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         HttpStatus status = HttpStatus.CONFLICT;
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
-        return new ResponseEntity<>(new UniversalErrorMessageFormat(
-                status.value(),
-                status.getReasonPhrase(),
-                request.getMethod(),
-                request.getRequestURI(),
-                errors
-        ), new HttpHeaders(), status);
+        return createUniversalErrorMessageFormat(request, status, errors);
     }
 
     @ExceptionHandler(RegistrationException.class)
@@ -53,13 +59,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         HttpStatus status = HttpStatus.BAD_REQUEST;
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
-        return new ResponseEntity<>(new UniversalErrorMessageFormat(
-                status.value(),
-                status.getReasonPhrase(),
-                request.getMethod(),
-                request.getRequestURI(),
-                errors
-        ), new HttpHeaders(), status);
+        return createUniversalErrorMessageFormat(request, status, errors);
     }
 
     @Override
@@ -70,15 +70,11 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             WebRequest request) {
         HttpStatus status = HttpStatus.valueOf(httpStatusCode.value());
         HttpServletRequest servletRequest = ((ServletWebRequest) request).getRequest();
-        return new ResponseEntity<>(new UniversalErrorMessageFormat(
-                status.value(),
-                status.getReasonPhrase(),
-                servletRequest.getMethod(),
-                servletRequest.getRequestURI(),
+        return createUniversalErrorMessageFormat(servletRequest, status,
                 ex.getBindingResult().getAllErrors().stream()
                         .map(this::getErrorMessage)
-                        .toList()
-        ), headers, status);
+                        .toList(),
+                headers);
     }
 
     private String getErrorMessage(ObjectError e) {
