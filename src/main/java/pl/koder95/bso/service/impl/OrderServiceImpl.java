@@ -6,12 +6,10 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.koder95.bso.dto.CreateOrderRequestDto;
 import pl.koder95.bso.dto.OrderItemResponseDto;
 import pl.koder95.bso.dto.OrderResponseDto;
@@ -48,7 +46,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public OrderResponseDto create(CreateOrderRequestDto dto) {
         User user = getAuthenticatedUser();
@@ -77,7 +74,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Order not found with id: " + id)
         );
-        authorizeOrderAccess(order);
         orderMapper.updateModel(order, dto);
         return orderMapper.toResponseDto(orderRepository.save(order));
     }

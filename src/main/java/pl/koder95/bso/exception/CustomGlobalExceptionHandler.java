@@ -37,6 +37,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return createUniversalErrorMessageFormat(request, status, errors, new HttpHeaders());
     }
 
+    @ExceptionHandler(CreateOrderException.class)
+    protected ResponseEntity<Object> handleCreateOrderException(
+            EntityNotFoundException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        return createUniversalErrorMessageFormat(request, status, List.of(ex.getMessage()));
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<Object> handleEntityNotFoundException(
             EntityNotFoundException ex, HttpServletRequest request) {
