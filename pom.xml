@@ -10,7 +10,7 @@
     </parent>
     <groupId>pl.koder95</groupId>
     <artifactId>book-shop-online</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>book-shop-online</name>
     <description>book-shop-online</description>
     <url/>

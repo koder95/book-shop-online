@@ -55,8 +55,8 @@ public class OrderServiceImpl implements OrderService {
         authorizeCartAccess(shoppingCart);
         Order order = orderMapper.toModel(dto, shoppingCart);
         if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
-            throw new CreateOrderException("Cannot create order without order items. Add a item to "
-                    + "shopping cart at first.");
+            throw new CreateOrderException("Cannot create order without order items. "
+                    + "Add an item to the shopping cart first.");
         }
         Order saved = orderRepository.save(order);
         clearCart(shoppingCart);
