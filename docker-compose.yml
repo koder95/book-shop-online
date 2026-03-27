@@ -1,0 +1,28 @@
+services:
+  mysqldb:
+    image: mariadb
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - "$DB_PORT:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: $DB_ROOT_PASSWORD
+      MARIADB_DATABASE: $DB_NAME
+      MARIADB_USER: $DB_USER
+      MARIADB_PASSWORD: $DB_PASS
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  app:
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    restart: on-failure
+    image: bso-api
+    build: .
+    env_file: ./.env
+    ports:
+      - "8081:8888"
+      - "54342:54342"
