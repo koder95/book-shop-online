@@ -6,6 +6,7 @@ import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.BookDtoWithoutCategoryIds;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
+import pl.koder95.bso.dto.UpdateBookRequestDto;
 
 public interface BookService {
     BookDto save(CreateBookRequestDto book);
@@ -14,7 +15,7 @@ public interface BookService {
 
     BookDto get(Long id);
 
-    BookDto update(Long id, CreateBookRequestDto book);
+    BookDto update(Long id, UpdateBookRequestDto book);
 
     void delete(Long id);
 

@@ -10,6 +10,7 @@ import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.BookDtoWithoutCategoryIds;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
+import pl.koder95.bso.dto.UpdateBookRequestDto;
 import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.BookMapper;
@@ -69,7 +70,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto update(Long id, CreateBookRequestDto book) {
+    public BookDto update(Long id, UpdateBookRequestDto book) {
         Book model = bookRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Entity with id " + id + " not found")
         );
