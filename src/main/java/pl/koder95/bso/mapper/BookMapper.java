@@ -20,8 +20,6 @@ public interface BookMapper {
 
     Book toModel(CreateBookRequestDto book, @Context List<Category> allById);
 
-    Book toModel(UpdateBookRequestDto book, @Context List<Category> allById);
-
     void updateModel(@MappingTarget Book model, UpdateBookRequestDto dto,
                      @Context List<Category> allById);
 

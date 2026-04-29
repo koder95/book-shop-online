@@ -85,6 +85,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new EntityNotFoundException("Entity with id " + id + " not found");
+        }
         try {
             bookRepository.deleteById(id);
         } catch (Exception e) {

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.BookSearchParametersDto;
 import pl.koder95.bso.dto.CreateBookRequestDto;
+import pl.koder95.bso.dto.UpdateBookRequestDto;
 import pl.koder95.bso.service.BookService;
 
 @SecurityRequirement(name = "bearer-key")
@@ -62,7 +63,7 @@ public class BookController {
             description = "Change a properties of the book specified by identity number (id).")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BookDto update(@PathVariable Long id, @Valid @RequestBody CreateBookRequestDto book) {
+    public BookDto update(@PathVariable Long id, @Valid @RequestBody UpdateBookRequestDto book) {
         return bookService.update(id, book);
     }
 
