@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import pl.koder95.bso.dto.CategoryResponseDto;
 import pl.koder95.bso.dto.CreateCategoryRequestDto;
 import pl.koder95.bso.dto.UpdateCategoryDto;
+import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.CategoryMapper;
 import pl.koder95.bso.model.Category;
@@ -62,8 +63,11 @@ public class CategoryServiceTest {
         // then
         assertEquals(expected, actual);
         Mockito.verify(categoryRepository, Mockito.times(1)).save(beforeSave);
+        Mockito.verify(categoryRepository, Mockito.times(1)).existsByName(testName);
         Mockito.verify(categoryMapper, Mockito.times(1)).toModel(request);
         Mockito.verify(categoryMapper, Mockito.times(1)).toResponseDto(afterSave);
+        Mockito.verifyNoMoreInteractions(categoryMapper);
+        Mockito.verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -84,7 +88,26 @@ public class CategoryServiceTest {
         assertThrows(DataIntegrityViolationException.class, () -> categoryService.save(request));
         // then
         Mockito.verify(categoryRepository, Mockito.times(1)).save(beforeSave);
+        Mockito.verify(categoryRepository, Mockito.times(1)).existsByName(null);
         Mockito.verify(categoryMapper, Mockito.times(1)).toModel(request);
+        Mockito.verifyNoMoreInteractions(categoryMapper);
+        Mockito.verifyNoMoreInteractions(categoryRepository);
+    }
+
+    @Test
+    public void save_requestDtoWithExistingName_throwDpE() {
+        // given
+        String testName = "Test name";
+        String testDescription = "Test description";
+        CreateCategoryRequestDto request = new CreateCategoryRequestDto(
+                testName, testDescription
+        );
+        Mockito.when(categoryRepository.existsByName(testName))
+                .thenReturn(true);
+        // when
+        assertThrows(DataProcessingException.class, () -> categoryService.save(request));
+        // then
+        Mockito.verify(categoryRepository, Mockito.times(1)).existsByName(testName);
         Mockito.verifyNoMoreInteractions(categoryMapper);
         Mockito.verifyNoMoreInteractions(categoryRepository);
     }
@@ -116,9 +139,12 @@ public class CategoryServiceTest {
         CategoryResponseDto actual = categoryService.save(request);
         // then
         assertEquals(expected, actual);
+        Mockito.verify(categoryRepository, Mockito.times(1)).existsByName(testName);
         Mockito.verify(categoryRepository, Mockito.times(1)).save(beforeSave);
         Mockito.verify(categoryMapper, Mockito.times(1)).toModel(request);
         Mockito.verify(categoryMapper, Mockito.times(1)).toResponseDto(afterSave);
+        Mockito.verifyNoMoreInteractions(categoryMapper);
+        Mockito.verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -204,6 +230,7 @@ public class CategoryServiceTest {
                 id, testName, newTestDescription
         );
         Mockito.when(categoryRepository.findById(id)).thenReturn(Optional.of(model));
+        Mockito.when(categoryRepository.existsByName(testName)).thenReturn(false);
         Mockito.doNothing().when(categoryMapper).updateModel(model, request);
         Mockito.when(categoryRepository.save(model)).thenReturn(model);
         CategoryResponseDto responseDto = new CategoryResponseDto(
@@ -214,6 +241,7 @@ public class CategoryServiceTest {
         categoryService.update(id, request);
         // then
         Mockito.verify(categoryRepository, Mockito.times(1)).findById(id);
+        Mockito.verify(categoryRepository, Mockito.times(1)).existsByName(testName);
         Mockito.verify(categoryMapper, Mockito.times(1)).updateModel(model, request);
         Mockito.verify(categoryMapper, Mockito.times(1)).toResponseDto(model);
         Mockito.verify(categoryRepository, Mockito.times(1)).save(model);
