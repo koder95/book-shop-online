@@ -215,7 +215,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void update_existingId_ok() {
+    public void update_existingIdAndNotExistingName_ok() {
         // given
         Long id = 1L;
         String testName = "Test category";
@@ -245,6 +245,32 @@ public class CategoryServiceTest {
         Mockito.verify(categoryMapper, Mockito.times(1)).updateModel(model, request);
         Mockito.verify(categoryMapper, Mockito.times(1)).toResponseDto(model);
         Mockito.verify(categoryRepository, Mockito.times(1)).save(model);
+        Mockito.verifyNoMoreInteractions(categoryMapper);
+        Mockito.verifyNoMoreInteractions(categoryRepository);
+    }
+
+    @Test
+    public void update_existingIdAndExistingName_throwDpE() {
+        // given
+        Long id = 1L;
+        String testName = "Test category";
+        String testDescription = "Test description";
+        String newTestDescription = "New test description";
+        Category model = new Category();
+        model.setId(id);
+        model.setName(testName);
+        model.setDescription(testDescription);
+        model.setDeleted(false);
+        UpdateCategoryDto request = new UpdateCategoryDto(
+                id, testName, newTestDescription
+        );
+        Mockito.when(categoryRepository.findById(id)).thenReturn(Optional.of(model));
+        Mockito.when(categoryRepository.existsByName(testName)).thenReturn(true);
+        // when
+        assertThrows(DataProcessingException.class, () -> categoryService.update(id, request));
+        // then
+        Mockito.verify(categoryRepository, Mockito.times(1)).findById(id);
+        Mockito.verify(categoryRepository, Mockito.times(1)).existsByName(testName);
         Mockito.verifyNoMoreInteractions(categoryMapper);
         Mockito.verifyNoMoreInteractions(categoryRepository);
     }
