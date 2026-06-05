@@ -112,13 +112,13 @@ public class BookServiceTest {
     }
 
     @Test
-    public void save_null_throwDpe() {
+    public void save_null_throwDataProcessingException() {
         // given, when & then
         assertThrows(DataProcessingException.class, () -> bookService.save(null));
     }
 
     @Test
-    public void save_emptyRequestDto_throwDpE() {
+    public void save_emptyRequestDto_throwDataProcessingException() {
         // given
         CreateBookRequestDto request = new CreateBookRequestDto();
 
@@ -127,7 +127,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void save_requestWithNotExistingCategoryIds_throwDpE() {
+    public void save_requestWithNotExistingCategoryIds_throwDataProcessingException() {
         // given
         CreateBookRequestDto request = new CreateBookRequestDto();
         request.setCategoryIds(List.of(1L, 2L));
@@ -139,7 +139,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void save_requestWithNotExistingCategoryId_throwDpE() {
+    public void save_requestWithNotExistingCategoryId_throwDataProcessingException() {
         // given
         CreateBookRequestDto request = new CreateBookRequestDto();
         request.setCategoryIds(List.of(1L));
@@ -150,7 +150,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void save_alreadyExists_throwDpE() {
+    public void save_alreadyExists_throwDataProcessingException() {
         // given
         CreateBookRequestDto request = new CreateBookRequestDto();
         request.setTitle("title");
@@ -232,7 +232,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void get_negativeId_throwEnfE() {
+    public void get_negativeId_throwEntityNotFoundException() {
         // given
         Long id = -1L;
         // when & then
@@ -240,7 +240,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void get_nonExistingId_throwEnfE() {
+    public void get_nonExistingId_throwEntityNotFoundException() {
         // given
         Long id = 1L;
         Mockito.when(bookRepository.findById(id)).thenReturn(java.util.Optional.empty());
@@ -279,7 +279,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void update_nonExistingId_throwEnfE() {
+    public void update_nonExistingId_throwEntityNotFoundException() {
         // given
         Long id = 1L;
         UpdateBookRequestDto request = new UpdateBookRequestDto();
@@ -339,7 +339,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void delete_nonExistingId_throwEnfE() {
+    public void delete_nonExistingId_throwEntityNotFoundException() {
         // given
         Long id = 1L;
         Mockito.when(bookRepository.existsById(id)).thenReturn(false);

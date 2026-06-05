@@ -71,7 +71,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void save_requestDtoWithoutName_throwDivE() {
+    public void save_requestDtoWithoutName_throwDataIntegrityViolationException() {
         // given
         String testDescription = "Test description";
         Category beforeSave = new Category();
@@ -95,7 +95,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void save_requestDtoWithExistingName_throwDpE() {
+    public void save_requestDtoWithExistingName_throwDataProcessingException() {
         // given
         String testName = "Test name";
         String testDescription = "Test description";
@@ -174,7 +174,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void getById_nonExistingId_throwEnfE() {
+    public void getById_nonExistingId_throwEntityNotFoundException() {
         // given
         Long id = 1L;
         Mockito.when(categoryRepository.findById(id)).thenReturn(Optional.empty());
@@ -202,7 +202,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void deleteById_nonExistingId_throwEnfE() {
+    public void deleteById_nonExistingId_throwEntityNotFoundException() {
         // given
         Long id = 1L;
         Mockito.when(categoryRepository.existsById(id)).thenReturn(false);
@@ -250,7 +250,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void update_existingIdAndExistingName_throwDpE() {
+    public void update_existingIdAndExistingName_throwDataProcessingException() {
         // given
         Long id = 1L;
         String testName = "Test category";
@@ -276,7 +276,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void update_nonExistingId_throwEnfE() {
+    public void update_nonExistingId_throwEntityNotFoundException() {
         // given
         Long id = 1L;
         String testName = "Test category";
