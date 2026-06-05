@@ -1,6 +1,5 @@
 package pl.koder95.bso.controller;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,42 +34,32 @@ public class CategoryControllerTest {
                 .build();
     }
 
-    // createCategory(CreateCategoryRequestDto categoryDto)
-
     @Test
     @WithAnonymousUser
-    void createCategory_asGuest_status403() {
-        try {
-            mockMvc.perform(post("/api/categories")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("""
-                                    {
-                                        "name": "Test category"
-                                    }
-                                    """))
-                    .andExpect(status().isForbidden());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void createCategory_asGuest_status403() throws Exception {
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Test category"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void createCategory_asAdmin_ok() {
-        try {
-            mockMvc.perform(post("/api/categories")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("""
-                                    {
-                                        "name": "Test category"
-                                    }
-                                    """))
-                    .andExpect(status().isCreated());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void createCategory_asAdmin_ok() throws Exception {
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Test category"
+                                }
+                                """))
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -79,32 +68,22 @@ public class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void createCategory_withExistingNameAsAdmin_status409() {
-        try {
-            mockMvc.perform(post("/api/categories")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("""
-                                    {
-                                        "name": "Test category"
-                                    }
-                                    """))
-                    .andExpect(status().isConflict());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void createCategory_withExistingNameAsAdmin_status409() throws Exception {
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Test category"
+                                }
+                                """))
+                .andExpect(status().isConflict());
     }
-
-    // getAll(Pageable pageable)
 
     @Test
     @WithAnonymousUser
-    void getAll_asGuest_status403() {
-        try {
-            mockMvc.perform(get("/api/categories"))
-                    .andExpect(status().isForbidden());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void getAll_asGuest_status403() throws Exception {
+        mockMvc.perform(get("/api/categories"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -113,35 +92,25 @@ public class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void getAll_asAdmin_ok() {
-        try {
-            mockMvc.perform(get("/api/categories"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.content").isNotEmpty())
-                    .andExpect(jsonPath("$.number").isNumber())
-                    .andExpect(jsonPath("$.size").isNumber())
-                    .andExpect(jsonPath("$.totalPages").isNumber())
-                    .andExpect(jsonPath("$.totalElements").isNumber())
-                    .andExpect(jsonPath("$.numberOfElements").isNumber())
-                    .andExpect(jsonPath("$.sort").isMap())
-                    .andExpect(jsonPath("$.first").isBoolean())
-                    .andExpect(jsonPath("$.last").isBoolean());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void getAll_asAdmin_ok() throws Exception {
+        mockMvc.perform(get("/api/categories"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isNotEmpty())
+                .andExpect(jsonPath("$.number").isNumber())
+                .andExpect(jsonPath("$.size").isNumber())
+                .andExpect(jsonPath("$.totalPages").isNumber())
+                .andExpect(jsonPath("$.totalElements").isNumber())
+                .andExpect(jsonPath("$.numberOfElements").isNumber())
+                .andExpect(jsonPath("$.sort").isMap())
+                .andExpect(jsonPath("$.first").isBoolean())
+                .andExpect(jsonPath("$.last").isBoolean());
     }
-
-    // getCategoryById(Long id)
 
     @Test
     @WithAnonymousUser
-    void getCategoryById_asGuest_status403() {
-        try {
-            mockMvc.perform(get("/api/categories/1"))
-                    .andExpect(status().isForbidden());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void getCategoryById_asGuest_status403() throws Exception {
+        mockMvc.perform(get("/api/categories/1"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -150,34 +119,24 @@ public class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void getCategoryById_asAdmin_ok() {
-        try {
-            mockMvc.perform(get("/api/categories/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.name").value("Test category"));
-        } catch (Exception e) {
-            fail(e);
-        }
+    void getCategoryById_asAdmin_ok() throws Exception {
+        mockMvc.perform(get("/api/categories/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Test category"));
     }
-
-    // updateCategory(Long id, UpdateCategoryDto categoryDto)
 
     @Test
     @WithAnonymousUser
-    void updateCategory_asGuest_status403() {
-        try {
-            mockMvc.perform(put("/api/categories/1")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("""
-                                    {
-                                        "name": "Updated category"
-                                    }
-                                    """))
-                    .andExpect(status().isForbidden());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void updateCategory_asGuest_status403() throws Exception {
+        mockMvc.perform(put("/api/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Updated category"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -186,35 +145,25 @@ public class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void updateCategory_asAdmin_ok() {
-        try {
-            mockMvc.perform(put("/api/categories/1")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("""
-                                    {
-                                        "id": 1,
-                                        "name": "Updated category"
-                                    }
-                                    """))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.name").value("Updated category"));
-        } catch (Exception e) {
-            fail(e);
-        }
+    void updateCategory_asAdmin_ok() throws Exception {
+        mockMvc.perform(put("/api/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": 1,
+                                    "name": "Updated category"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Updated category"));
     }
-
-    // deleteCategory(Long id)
 
     @Test
     @WithAnonymousUser
-    void deleteCategory_asGuest_status403() {
-        try {
-            mockMvc.perform(delete("/api/categories/1"))
-                    .andExpect(status().isForbidden());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void deleteCategory_asGuest_status403() throws Exception {
+        mockMvc.perform(delete("/api/categories/1"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -223,26 +172,16 @@ public class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void deleteCategory_asAdmin_ok() {
-        try {
-            mockMvc.perform(delete("/api/categories/1"))
-                    .andExpect(status().isNoContent());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void deleteCategory_asAdmin_ok() throws Exception {
+        mockMvc.perform(delete("/api/categories/1"))
+                .andExpect(status().isNoContent());
     }
-
-    // getBooksByCategoryId(Long categoryId, Pageable pageable)
 
     @Test
     @WithAnonymousUser
-    void getBooksByCategoryId_asGuest_status403() {
-        try {
-            mockMvc.perform(get("/api/categories/1/books"))
-                    .andExpect(status().isForbidden());
-        } catch (Exception e) {
-            fail(e);
-        }
+    void getBooksByCategoryId_asGuest_status403() throws Exception {
+        mockMvc.perform(get("/api/categories/1/books"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -251,16 +190,17 @@ public class CategoryControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/insert_test_book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_books_categories_bind.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_book.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(scripts = "/sql/delete_test_category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void getBooksByCategoryId_asAdmin_ok() {
-        try {
-            mockMvc.perform(get("/api/categories/1/books"))
-                    .andExpect(status().isOk());
-        } catch (Exception e) {
-            fail(e);
-        }
+    @Sql(scripts = "/sql/delete_test_books_categories_bind.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void getBooksByCategoryId_asAdmin_ok() throws Exception {
+        mockMvc.perform(get("/api/categories/1/books"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isNotEmpty());
     }
 }
