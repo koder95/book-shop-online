@@ -203,4 +203,105 @@ public class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isNotEmpty());
     }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void create_withBlankName_status400() throws Exception {
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": ""
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void create_withNullName_status400() throws Exception {
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": null
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void create_withTooLongName_status400() throws Exception {
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Lorem ipsum dolor sit amet, consectetur adipiscing\s
+                                    elit. Nulla sodales quis augue ut volutpat. Nullam aliquet\s
+                                    sodales purus. Nulla facilisi. Vivamus ac sem ullamcorper,\s
+                                    maximus orci in, pellentesque purus. Mauris sem enim, mollis\s
+                                    ac nisl ut nullam sodales."
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    @Sql(scripts = "/sql/insert_test_category.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_category.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void update_withBlankName_status400() throws Exception {
+        mockMvc.perform(put("/api/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": 1,
+                                    "name": ""
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    @Sql(scripts = "/sql/insert_test_category.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_category.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void update_withNullName_status400() throws Exception {
+        mockMvc.perform(put("/api/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": 1,
+                                    "name": null
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    @Sql(scripts = "/sql/insert_test_category.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_category.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void update_withTooLongName_status400() throws Exception {
+        mockMvc.perform(put("/api/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": 1,
+                                    "name": "Lorem ipsum dolor sit amet, consectetur adipiscing\s
+                                    elit. Nulla sodales quis augue ut volutpat. Nullam aliquet\s
+                                    sodales purus. Nulla facilisi. Vivamus ac sem ullamcorper,\s
+                                    maximus orci in, pellentesque purus. Mauris sem enim, mollis\s
+                                    ac nisl ut nullam sodales."
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
 }
