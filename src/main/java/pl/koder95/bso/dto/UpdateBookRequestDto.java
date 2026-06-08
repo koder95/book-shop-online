@@ -1,0 +1,24 @@
+package pl.koder95.bso.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
+import java.util.List;
+import lombok.Data;
+
+@Data
+public class UpdateBookRequestDto {
+    @NotBlank
+    private String title;
+    @NotBlank
+    private String author;
+    @NotBlank
+    private String isbn;
+    @NotNull
+    @Positive
+    private BigDecimal price;
+    private String description;
+    private String coverImage;
+    private List<Long> categoryIds;
+}

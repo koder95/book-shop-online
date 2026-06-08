@@ -1,0 +1,1 @@
+INSERT INTO books (id, title, author, isbn, price, description, cover_image, is_deleted) VALUES (1, 'Test Book', 'Test Author', '978-0-123456-78-9', 19.99, 'A test book for unit testing purposes.', 'test-book.jpg', false);

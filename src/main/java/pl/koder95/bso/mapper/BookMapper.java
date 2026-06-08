@@ -10,6 +10,7 @@ import pl.koder95.bso.config.MapperConfig;
 import pl.koder95.bso.dto.BookDto;
 import pl.koder95.bso.dto.BookDtoWithoutCategoryIds;
 import pl.koder95.bso.dto.CreateBookRequestDto;
+import pl.koder95.bso.dto.UpdateBookRequestDto;
 import pl.koder95.bso.model.Book;
 import pl.koder95.bso.model.Category;
 
@@ -19,7 +20,7 @@ public interface BookMapper {
 
     Book toModel(CreateBookRequestDto book, @Context List<Category> allById);
 
-    void updateModel(@MappingTarget Book model, CreateBookRequestDto dto,
+    void updateModel(@MappingTarget Book model, UpdateBookRequestDto dto,
                      @Context List<Category> allById);
 
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);

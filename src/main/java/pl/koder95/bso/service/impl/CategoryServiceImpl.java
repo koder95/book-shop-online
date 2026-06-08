@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.koder95.bso.dto.CategoryResponseDto;
 import pl.koder95.bso.dto.CreateCategoryRequestDto;
 import pl.koder95.bso.dto.UpdateCategoryDto;
+import pl.koder95.bso.exception.DataProcessingException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.mapper.CategoryMapper;
 import pl.koder95.bso.model.Category;
@@ -36,6 +37,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDto save(CreateCategoryRequestDto categoryDto) {
+        if (categoryRepository.existsByName(categoryDto.name())) {
+            throw new DataProcessingException(
+                    "A category with the name '%s' already exists.".formatted(categoryDto.name()),
+                    null
+            );
+        }
         return categoryMapper.toResponseDto(
                 categoryRepository.save(categoryMapper.toModel(categoryDto))
         );
@@ -46,12 +53,22 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Cannot find a category by id: " + id)
         );
+        if (categoryRepository.existsByName(categoryDto.name())) {
+            throw new DataProcessingException(
+                    "A category with the name '%s' already exists.".formatted(categoryDto.name()),
+                    null
+            );
+        }
         categoryMapper.updateModel(category, categoryDto);
         return categoryMapper.toResponseDto(categoryRepository.save(category));
     }
 
     @Override
     public void deleteById(Long id) {
-        categoryRepository.deleteById(id);
+        if (categoryRepository.existsById(id)) {
+            categoryRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Cannot find a category by id: " + id);
+        }
     }
 }

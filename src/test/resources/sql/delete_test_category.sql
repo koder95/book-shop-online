@@ -1,0 +1,2 @@
+DELETE FROM categories WHERE id = 1;
+ALTER TABLE categories ALTER COLUMN id RESTART WITH 1;
