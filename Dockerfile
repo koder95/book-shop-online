@@ -8,7 +8,7 @@ COPY pom.xml ./
 COPY checkstyle.xml ./
 RUN ./mvnw clean package -DskipTests
 ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} bso.jar
+RUN cp ${JAR_FILE} bso.jar
 RUN java -Djarmode=layertools -jar bso.jar extract
 
 FROM eclipse-temurin:21-jre-alpine
