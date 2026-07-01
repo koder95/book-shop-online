@@ -65,8 +65,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (first.isPresent()) {
             Integer quantity = item.getQuantity();
             quantity = quantity == null ? 0 : quantity; // preventing NPE
+            final int old = quantity;
             item = first.get();
-            item.setQuantity(item.getQuantity() + quantity);
+            item.setQuantity(old + quantity);
         }
         cartItemRepository.save(item);
         shoppingCart.getCartItems().add(item);
