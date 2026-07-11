@@ -89,4 +89,42 @@ public class ShoppingCartServiceTest {
         );
         Mockito.verifyNoInteractions(bookRepository, cartItemRepository, cartItemMapper);
     }
+
+    @Test
+    void getShoppingCart_withAuthCreatedYetAsAdmin_ok() {
+        Role adminRole = new Role();
+        adminRole.setName(RoleName.ROLE_ADMIN);
+        User authenticated = new User();
+        authenticated.setId(1L);
+        authenticated.setRoles(Set.of(adminRole));
+        authenticated.setEmail("admin@example.com");
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                authenticated, null, authenticated.getAuthorities()
+        );
+        ShoppingCart cart = new ShoppingCart();
+        cart.setId(1L);
+        cart.setUser(authenticated);
+        cart.setCartItems(Set.of());
+        Mockito.when(shoppingCartRepository.findById(1L)).thenReturn(java.util.Optional.of(cart));
+        ShoppingCartResponseDto expected = new ShoppingCartResponseDto(
+                cart.getId(), authenticated.getId(), List.of()
+        );
+        Mockito.when(shoppingCartMapper.toResponseDto(Mockito.any())).thenReturn(expected);
+        ShoppingCartResponseDto actual;
+        try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
+            SecurityContext mockedSecurityContext = Mockito.mock();
+            mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
+            actual = shoppingCartService.getShoppingCart();
+            Mockito.verify(mockedSecurityContext, Mockito.times(1)).getAuthentication();
+            mockedStatic.verify(SecurityContextHolder::getContext, Mockito.times(1));
+            Mockito.verifyNoMoreInteractions(mockedSecurityContext);
+            mockedStatic.verifyNoMoreInteractions();
+        }
+        assertEquals(expected, actual);
+        Mockito.verifyNoMoreInteractions(shoppingCartRepository, shoppingCartMapper);
+        Mockito.verifyNoInteractions(
+                shoppingCartFactory, bookRepository, cartItemRepository, cartItemMapper
+        );
+    }
 }
