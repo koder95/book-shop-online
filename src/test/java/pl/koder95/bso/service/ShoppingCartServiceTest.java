@@ -190,4 +190,59 @@ public class ShoppingCartServiceTest {
                 cartItemRepository, cartItemMapper, bookRepository
         );
     }
+
+    @Test
+    void addItem_toNonEmptyCartAsOwner_ok() {
+        Role userRole = new Role();
+        userRole.setName(RoleName.ROLE_USER);
+        User authenticated = new User();
+        authenticated.setId(1L);
+        authenticated.setRoles(Set.of(userRole));
+        authenticated.setEmail("user@example.com");
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                authenticated, null, authenticated.getAuthorities()
+        );
+        ShoppingCart cart = new ShoppingCart();
+        cart.setId(1L);
+        cart.setUser(authenticated);
+        cart.setCartItems(new HashSet<>());
+        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(java.util.Optional.of(cart));
+        Book book = new Book();
+        book.setId(1L);
+        book.setAuthor("author");
+        book.setTitle("title");
+        book.setIsbn("isbn");
+        book.setPrice(BigDecimal.TEN);
+        book.setCategories(new HashSet<>());
+        Mockito.when(bookRepository.findById(1L)).thenReturn(java.util.Optional.of(book));
+        CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
+        CartItem cartItem = new CartItem();
+        Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
+        Mockito.when(cartItemRepository.findFirstByShoppingCartAndBook(cart, book))
+                .thenReturn(Optional.of(cartItem));
+        Mockito.when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
+        Mockito.when(shoppingCartRepository.save(cart)).thenReturn(cart);
+        List<CartItemResponseDto> cartItems = new ArrayList<>();
+        cartItems.add(new CartItemResponseDto(1L, 1L, book.getTitle(), 1));
+        ShoppingCartResponseDto expected = new ShoppingCartResponseDto(
+                cart.getId(), authenticated.getId(), cartItems
+        );
+        Mockito.when(shoppingCartMapper.toResponseDto(cart)).thenReturn(expected);
+        ShoppingCartResponseDto actual;
+        try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
+            SecurityContext mockedSecurityContext = Mockito.mock();
+            mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
+            actual = shoppingCartService.addItem(requestDto);
+            Mockito.verify(mockedSecurityContext, Mockito.times(1)).getAuthentication();
+            mockedStatic.verify(SecurityContextHolder::getContext, Mockito.times(1));
+            Mockito.verifyNoMoreInteractions(mockedSecurityContext);
+            mockedStatic.verifyNoMoreInteractions();
+        }
+        assertEquals(expected, actual);
+        Mockito.verifyNoMoreInteractions(
+                shoppingCartRepository, shoppingCartMapper,
+                cartItemRepository, cartItemMapper, bookRepository
+        );
+    }
 }
