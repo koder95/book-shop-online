@@ -78,4 +78,42 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$.cartItems[0].bookId").value(1))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(2));
     }
+
+    @Test
+    @Sql(scripts = "/sql/insert_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testuser@example.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
+    void addItem_asNewUserWithoutExistingShoppingCartAndTheSameBookId_status200() throws Exception {
+        String cartItemJson = """
+        {
+            "bookId": 1,
+            "quantity": 3
+        }
+        """;
+        mockMvc.perform(post("/api/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartItemJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cartItems[0].bookId").value(1))
+                .andExpect(jsonPath("$.cartItems[0].quantity").value(3));
+        cartItemJson = """
+        {
+            "bookId": 1,
+            "quantity": 15
+        }
+        """;
+        mockMvc.perform(post("/api/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartItemJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cartItems[0].bookId").value(1))
+                .andExpect(jsonPath("$.cartItems[0].quantity").value(18));
+    }
 }

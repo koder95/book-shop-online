@@ -64,10 +64,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .findFirstByShoppingCartAndBook(shoppingCart, book);
         if (first.isPresent()) {
             Integer quantity = item.getQuantity();
-            quantity = quantity == null ? 0 : quantity; // preventing NPE
-            final int old = quantity;
+            final int old = quantity == null ? 0 : quantity; // preventing NPE
             item = first.get();
-            item.setQuantity(old + quantity);
+            quantity = item.getQuantity();
+            final int toAdd = quantity == null ? 0 : quantity; // preventing NPE
+            item.setQuantity(old + toAdd);
         }
         cartItemRepository.save(item);
         shoppingCart.getCartItems().add(item);
