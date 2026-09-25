@@ -152,7 +152,7 @@ public class ShoppingCartServiceTest {
         cart.setId(1L);
         cart.setUser(authenticated);
         cart.setCartItems(new HashSet<>());
-        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(java.util.Optional.of(cart));
+        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
         Book book = new Book();
         book.setId(1L);
         book.setAuthor("author");
@@ -160,7 +160,7 @@ public class ShoppingCartServiceTest {
         book.setIsbn("isbn");
         book.setPrice(BigDecimal.TEN);
         book.setCategories(new HashSet<>());
-        Mockito.when(bookRepository.findById(1L)).thenReturn(java.util.Optional.of(book));
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
         CartItem cartItem = new CartItem();
         Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
@@ -207,7 +207,7 @@ public class ShoppingCartServiceTest {
         cart.setId(1L);
         cart.setUser(authenticated);
         cart.setCartItems(new HashSet<>());
-        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(java.util.Optional.of(cart));
+        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
         Book book = new Book();
         book.setId(1L);
         book.setAuthor("author");
@@ -215,7 +215,7 @@ public class ShoppingCartServiceTest {
         book.setIsbn("isbn");
         book.setPrice(BigDecimal.TEN);
         book.setCategories(new HashSet<>());
-        Mockito.when(bookRepository.findById(1L)).thenReturn(java.util.Optional.of(book));
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
         CartItem cartItem = new CartItem();
         Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
@@ -348,7 +348,9 @@ public class ShoppingCartServiceTest {
         Mockito.verify(cartItemRepository).save(cartItem);
         Mockito.verify(shoppingCartRepository).findById(1L);
         Mockito.verify(shoppingCartMapper).toResponseDto(cart);
-        Mockito.verifyNoMoreInteractions(cartItemRepository, shoppingCartRepository, shoppingCartMapper);
+        Mockito.verifyNoMoreInteractions(
+                cartItemRepository, shoppingCartRepository, shoppingCartMapper
+        );
         Mockito.verifyNoInteractions(bookRepository, cartItemMapper, shoppingCartFactory);
     }
 
@@ -447,9 +449,10 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext context = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(context);
-            Mockito.when(context.getAuthentication()).thenReturn(new UsernamePasswordAuthenticationToken(
+            var authenticationToken = new UsernamePasswordAuthenticationToken(
                     authenticated, null, authenticated.getAuthorities()
-            ));
+            );
+            Mockito.when(context.getAuthentication()).thenReturn(authenticationToken);
             shoppingCartService.deleteItem(1L);
             Mockito.verify(context, Mockito.times(1)).getAuthentication();
             Mockito.verifyNoMoreInteractions(context);
