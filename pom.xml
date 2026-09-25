@@ -10,23 +10,32 @@
     </parent>
     <groupId>pl.koder95</groupId>
     <artifactId>book-shop-online</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <name>book-shop-online</name>
-    <description>book-shop-online</description>
-    <url/>
+    <version>${revision}</version>
+    <name>Book Shop Online</name>
+    <description>The backend for your e-commerce platform with books</description>
+    <url>https://koder95.pl/projekty/book-shop-online</url>
     <licenses>
-        <license/>
+        <license>
+            <name>The MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+        </license>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <email>kontakt@koder95.pl</email>
+            <id>koder95</id>
+            <name>Kamil Jan Mularski</name>
+            <timezone>Europe/Warsaw</timezone>
+        </developer>
     </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:https://github.com</connection>
+        <developerConnection>scm:git:git@github.com:koder95/book-shop-online.git</developerConnection>
+        <url>https://github.com</url>
+        <tag>v${}</tag>
     </scm>
     <properties>
+        <revision>1.0-SNAPSHOT</revision>
         <java.version>21</java.version>
         <maven.checkstyle.plugin.configLocation>checkstyle.xml</maven.checkstyle.plugin.configLocation>
         <mapstruct.version>1.6.3</mapstruct.version>
