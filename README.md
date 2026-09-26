@@ -9,7 +9,17 @@
 
 ## :one: General, concept, architecture
 
-Content coming soon...
+The primary goal of this project is to enhance my portfolio with a robust backend web application. It was developed with guidance from mentors who reviewed the Pull Requests.
+
+The application provides a REST API packaged as a Docker container, designed for serverless deployment. The implementation adheres to clean code principles and utilizes industry-standard technologies.
+
+### Architecture
+The project follows a traditional layered architecture pattern:
+
+- :four: **Presentation Layer**: Controllers, global exception handlers, DTOs
+- :three: **Business Layer**: Services, domain factories, managers
+- :two: **Data Access Layer**: JPA repositories, entities, mapper components
+- :one: **Infrastructure Layer**: Database schemas, migration scripts (e.g., Liquibase)
 
 ## :two: Features
 
