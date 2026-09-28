@@ -227,6 +227,31 @@ public class CartControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "testuser@example.com",
             userDetailsServiceBeanName = "customUserDetailsService")
+    void updateItem_asUserWithOneItemInShoppingCartAndZeroQuantity_status400() throws Exception {
+        String cartItemUpdateRequest = """
+                {
+                    "quantity": 0
+                }
+                """;
+        mockMvc.perform(put("/api/cart/cart-items/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartItemUpdateRequest))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Sql(scripts = "/sql/insert_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_cart_item.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testuser@example.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
     void deleteItem_asUserWithOneItemInShoppingCart_status204() throws Exception {
         mockMvc.perform(delete("/api/cart/cart-items/1")
                         .contentType(MediaType.APPLICATION_JSON))
