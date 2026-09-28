@@ -92,6 +92,77 @@ public class CartControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "testuser@example.com",
             userDetailsServiceBeanName = "customUserDetailsService")
+    void addItem_asNewUserWithoutExistingShoppingCartAndZeroQuantity_status400() throws Exception {
+        String cartItemJson = """
+                {
+                    "bookId": 1,
+                    "quantity": 0
+                }
+                """;
+        mockMvc.perform(post("/api/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartItemJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Sql(scripts = "/sql/insert_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testuser@example.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
+    void addItem_asNewUserWithoutExistingShoppingCartAndOnlyQuantity_status400() throws Exception {
+        String cartItemJson = """
+                {
+                    "quantity": 2
+                }
+                """;
+        mockMvc.perform(post("/api/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartItemJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Sql(scripts = "/sql/insert_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testuser@example.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
+    void addItem_asNewUserWithoutExistingShoppingCartAndZeroBookId_status400() throws Exception {
+        String cartItemJson = """
+                {
+                    "bookId": 0,
+                    "quantity": 2
+                }
+                """;
+        mockMvc.perform(post("/api/cart")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartItemJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Sql(scripts = "/sql/insert_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_new_user.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = "/sql/delete_test_book.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(value = "testuser@example.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
     void addItem_asNewUserWithoutExistingShoppingCartAndTheSameBookId_status200() throws Exception {
         String cartItemJson = """
                 {
@@ -159,7 +230,7 @@ public class CartControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(value = "testuser@example.com",
             userDetailsServiceBeanName = "customUserDetailsService")
-    void deleteItem_asUserWithOneItemInShoppingCart_status200() throws Exception {
+    void deleteItem_asUserWithOneItemInShoppingCart_status204() throws Exception {
         mockMvc.perform(delete("/api/cart/cart-items/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
