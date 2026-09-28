@@ -70,9 +70,6 @@ public class ShoppingCartServiceTest {
         authenticated.setId(1L);
         authenticated.setRoles(Set.of(userRole));
         authenticated.setEmail("user@example.com");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                authenticated, null, authenticated.getAuthorities()
-        );
         ShoppingCart cart = new ShoppingCart();
         cart.setId(1L);
         cart.setUser(authenticated);
@@ -87,6 +84,9 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockedSecurityContext = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
             Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
             actual = shoppingCartService.getShoppingCart();
             Mockito.verify(mockedSecurityContext, Mockito.times(2)).getAuthentication();
@@ -109,9 +109,6 @@ public class ShoppingCartServiceTest {
         authenticated.setId(1L);
         authenticated.setRoles(Set.of(adminRole));
         authenticated.setEmail("admin@example.com");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                authenticated, null, authenticated.getAuthorities()
-        );
         ShoppingCart cart = new ShoppingCart();
         cart.setId(1L);
         cart.setUser(authenticated);
@@ -125,6 +122,9 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockedSecurityContext = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
             Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
             actual = shoppingCartService.getShoppingCart();
             Mockito.verify(mockedSecurityContext, Mockito.times(1)).getAuthentication();
@@ -147,9 +147,6 @@ public class ShoppingCartServiceTest {
         authenticated.setId(1L);
         authenticated.setRoles(Set.of(userRole));
         authenticated.setEmail("user@example.com");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                authenticated, null, authenticated.getAuthorities()
-        );
         ShoppingCart cart = new ShoppingCart();
         cart.setId(1L);
         cart.setUser(authenticated);
@@ -180,6 +177,9 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockedSecurityContext = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
             Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
             actual = shoppingCartService.addItem(requestDto);
             Mockito.verify(mockedSecurityContext, Mockito.times(1)).getAuthentication();
@@ -202,31 +202,35 @@ public class ShoppingCartServiceTest {
         authenticated.setId(1L);
         authenticated.setRoles(Set.of(userRole));
         authenticated.setEmail("user@example.com");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                authenticated, null, authenticated.getAuthorities()
-        );
         ShoppingCart cart = new ShoppingCart();
         cart.setId(1L);
         cart.setUser(authenticated);
-        cart.setCartItems(new HashSet<>());
-        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
+        CartItem existedItem = new CartItem();
+        existedItem.setShoppingCart(cart);
+        existedItem.setQuantity(1);
         Book book = new Book();
+        existedItem.setBook(book);
+        cart.setCartItems(new HashSet<>(Set.of(existedItem)));
         book.setId(1L);
         book.setAuthor("author");
         book.setTitle("title");
         book.setIsbn("isbn");
         book.setPrice(BigDecimal.TEN);
         book.setCategories(new HashSet<>());
-        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
-        CartItem cartItem = new CartItem();
-        Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
+        Mockito.when(shoppingCartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
         Mockito.when(cartItemRepository.findFirstByShoppingCartAndBook(cart, book))
-                .thenReturn(Optional.of(cartItem));
-        Mockito.when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
+                .thenReturn(Optional.of(existedItem));
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        CartItem cartItem = new CartItem();
+        cartItem.setBook(book);
+        cartItem.setQuantity(1);
+        cartItem.setShoppingCart(cart);
+        CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
+        Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
+        Mockito.when(cartItemRepository.save(existedItem)).thenReturn(existedItem);
         Mockito.when(shoppingCartRepository.save(cart)).thenReturn(cart);
         List<CartItemResponseDto> cartItems = new ArrayList<>();
-        cartItems.add(new CartItemResponseDto(1L, 1L, book.getTitle(), 1));
+        cartItems.add(new CartItemResponseDto(1L, 1L, book.getTitle(), 2));
         ShoppingCartResponseDto expected = new ShoppingCartResponseDto(
                 cart.getId(), authenticated.getId(), cartItems
         );
@@ -235,6 +239,9 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockedSecurityContext = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
             Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
             actual = shoppingCartService.addItem(requestDto);
             Mockito.verify(mockedSecurityContext, Mockito.times(1)).getAuthentication();
@@ -295,7 +302,8 @@ public class ShoppingCartServiceTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         cartItem.setShoppingCart(shoppingCart);
         Mockito.when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
-        assertThrows(AuthenticatedUserException.class, () -> shoppingCartService.updateItem(1L, -1));
+        assertThrows(AuthenticatedUserException.class,
+                () -> shoppingCartService.updateItem(1L, -1));
         Mockito.verify(cartItemRepository).findById(1L);
         Mockito.verifyNoMoreInteractions(cartItemRepository);
     }
@@ -308,9 +316,6 @@ public class ShoppingCartServiceTest {
         authenticated.setId(1L);
         authenticated.setRoles(Set.of(userRole));
         authenticated.setEmail("user@example.com");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                authenticated, null, authenticated.getAuthorities()
-        );
         Book book = new Book();
         book.setId(1L);
         book.setTitle("title");
@@ -337,6 +342,9 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockedSecurityContext = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
             Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
             actual = shoppingCartService.updateItem(1L, 3);
             Mockito.verify(mockedSecurityContext, Mockito.times(2)).getAuthentication();
@@ -364,9 +372,6 @@ public class ShoppingCartServiceTest {
         authenticated.setId(1L);
         authenticated.setRoles(Set.of(userRole));
         authenticated.setEmail("user@example.com");
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                authenticated, null, authenticated.getAuthorities()
-        );
         Book book = new Book();
         book.setId(2L);
         book.setTitle("another");
@@ -395,6 +400,9 @@ public class ShoppingCartServiceTest {
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext mockedSecurityContext = Mockito.mock();
             mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
             Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
             actual = shoppingCartService.updateItem(1L, 5);
             Mockito.verify(mockedSecurityContext, Mockito.times(3)).getAuthentication();
