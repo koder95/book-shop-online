@@ -69,6 +69,15 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return createUniversalErrorMessageFormat(request, status, errors);
     }
 
+    @ExceptionHandler(AuthenticatedUserException.class)
+    protected ResponseEntity<Object> handleRegistrationException(
+            AuthenticatedUserException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        List<String> errors = new ArrayList<>();
+        errors.add(ex.getMessage());
+        return createUniversalErrorMessageFormat(request, status, errors);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,

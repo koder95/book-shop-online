@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.koder95.bso.exception.AuthenticatedUserException;
 
 @Entity
 @Setter
@@ -79,15 +81,19 @@ public class User implements UserDetails {
         return Objects.hash(getEmail());
     }
 
-    public static User authenticated() {
+    public static Optional<User> authenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new IllegalStateException("Authentication object is null");
+            return Optional.empty();
         }
         Object principal = authentication.getPrincipal();
         if (principal instanceof User user) {
-            return user;
+            return Optional.of(user);
         }
-        throw new IllegalStateException("Authentication principal object is an unknown type");
+        return Optional.empty();
+    }
+
+    public static User requireAuthenticated() {
+        return authenticated().orElseThrow(AuthenticatedUserException::new);
     }
 }

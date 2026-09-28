@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponseDto> getAll(Pageable pageable) {
-        User user = User.authenticated();
+        User user = User.requireAuthenticated();
         return orderRepository.findAllByUser(user, pageable)
                 .map(orderMapper::toResponseDto);
     }
@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDto create(CreateOrderRequestDto dto) {
-        User user = User.authenticated();
+        User user = User.requireAuthenticated();
         ShoppingCart shoppingCart = shoppingCartRepository.findById(user.getId()).orElseThrow(
                 () -> new EntityNotFoundException("Cannot find cart for authenticated user")
         );
@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static void authorizeCartAccess(ShoppingCart cart) {
-        User user = User.authenticated();
+        User user = User.requireAuthenticated();
         if (!cart.getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Cart is not maintained by authenticated user"
@@ -110,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static void authorizeOrderAccess(Order order) {
-        User user = User.authenticated();
+        User user = User.requireAuthenticated();
         if (!order.getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Order is not maintained by authenticated user"

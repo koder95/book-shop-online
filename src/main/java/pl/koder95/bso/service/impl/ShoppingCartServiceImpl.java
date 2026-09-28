@@ -3,8 +3,6 @@ package pl.koder95.bso.service.impl;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.koder95.bso.dto.CartItemRequestDto;
@@ -33,13 +31,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartFactory shoppingCartFactory;
 
     private ShoppingCart createShoppingCart() {
-        ShoppingCart created = shoppingCartFactory.createShoppingCart(User.authenticated());
+        ShoppingCart created = shoppingCartFactory.createShoppingCart(User.requireAuthenticated());
         shoppingCartRepository.save(created);
         return created;
     }
 
     private ShoppingCart getOrCreateShoppingCart() {
-        return shoppingCartRepository.findById(User.authenticated().getId())
+        return shoppingCartRepository.findById(User.requireAuthenticated().getId())
                 .orElseGet(this::createShoppingCart);
     }
 
@@ -101,7 +99,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private static void authorizeCartItemAccess(CartItem cartItem) {
-        User user = User.authenticated();
+        User user = User.requireAuthenticated();
         if (!cartItem.getShoppingCart().getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Item is not in shopping cart maintained by user: " + user.getEmail()

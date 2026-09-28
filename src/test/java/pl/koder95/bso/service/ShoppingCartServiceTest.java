@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import pl.koder95.bso.dto.CartItemRequestDto;
 import pl.koder95.bso.dto.CartItemResponseDto;
 import pl.koder95.bso.dto.ShoppingCartResponseDto;
+import pl.koder95.bso.exception.AuthenticatedUserException;
 import pl.koder95.bso.exception.EntityNotFoundException;
 import pl.koder95.bso.factory.ShoppingCartFactory;
 import pl.koder95.bso.mapper.CartItemMapper;
@@ -55,8 +56,9 @@ public class ShoppingCartServiceTest {
     private ShoppingCartServiceImpl shoppingCartService;
 
     @Test
-    void getShoppingCart_withoutAuth_throwIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> shoppingCartService.getShoppingCart());
+    void getShoppingCart_withoutAuth_throwAuthenticatedUserException() {
+        assertThrows(AuthenticatedUserException.class,
+                () -> shoppingCartService.getShoppingCart());
     }
 
     @Test
@@ -287,13 +289,13 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    void updateItem_existentIdNegativeQuantity_throwIllegalStateException() {
+    void updateItem_existentIdNegativeQuantity_throwAuthenticatedUserException() {
         CartItem cartItem = new CartItem();
         cartItem.setId(1L);
         ShoppingCart shoppingCart = new ShoppingCart();
         cartItem.setShoppingCart(shoppingCart);
         Mockito.when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
-        assertThrows(IllegalStateException.class, () -> shoppingCartService.updateItem(1L, -1));
+        assertThrows(AuthenticatedUserException.class, () -> shoppingCartService.updateItem(1L, -1));
         Mockito.verify(cartItemRepository).findById(1L);
         Mockito.verifyNoMoreInteractions(cartItemRepository);
     }
