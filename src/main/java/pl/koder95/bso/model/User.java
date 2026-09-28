@@ -17,7 +17,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -75,5 +77,17 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(getEmail());
+    }
+
+    public static User authenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("Authentication object is null");
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User user) {
+            return user;
+        }
+        throw new IllegalStateException("Authentication principal object is an unknown type");
     }
 }

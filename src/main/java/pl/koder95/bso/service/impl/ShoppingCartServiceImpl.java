@@ -33,13 +33,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartFactory shoppingCartFactory;
 
     private ShoppingCart createShoppingCart() {
-        ShoppingCart created = shoppingCartFactory.createShoppingCart(getAuthenticatedUser());
+        ShoppingCart created = shoppingCartFactory.createShoppingCart(User.authenticated());
         shoppingCartRepository.save(created);
         return created;
     }
 
     private ShoppingCart getOrCreateShoppingCart() {
-        return shoppingCartRepository.findById(getAuthenticatedUser().getId())
+        return shoppingCartRepository.findById(User.authenticated().getId())
                 .orElseGet(this::createShoppingCart);
     }
 
@@ -101,23 +101,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private static void authorizeCartItemAccess(CartItem cartItem) {
-        User user = getAuthenticatedUser();
+        User user = User.authenticated();
         if (!cartItem.getShoppingCart().getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Item is not in shopping cart maintained by user: " + user.getEmail()
             );
         }
-    }
-
-    private static User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new IllegalStateException("Authentication object is null");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User user) {
-            return user;
-        }
-        throw new IllegalStateException("Authentication principal object is an unknown type");
     }
 }
