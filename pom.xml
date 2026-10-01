@@ -32,7 +32,7 @@
         <connection>scm:git:https://github.com</connection>
         <developerConnection>scm:git:git@github.com:koder95/book-shop-online.git</developerConnection>
         <url>https://github.com</url>
-        <tag>v${}</tag>
+        <tag>v${revision}</tag>
     </scm>
     <properties>
         <revision>1.0-SNAPSHOT</revision>
@@ -81,6 +81,19 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mysql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
