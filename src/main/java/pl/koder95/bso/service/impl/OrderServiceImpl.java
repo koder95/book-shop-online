@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import pl.koder95.bso.dto.CreateOrderRequestDto;
 import pl.koder95.bso.dto.OrderItemResponseDto;
@@ -40,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponseDto> getAll(Pageable pageable) {
-        User user = getAuthenticatedUser();
+        User user = User.requireAuthenticated();
         return orderRepository.findAllByUser(user, pageable)
                 .map(orderMapper::toResponseDto);
     }
@@ -48,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDto create(CreateOrderRequestDto dto) {
-        User user = getAuthenticatedUser();
+        User user = User.requireAuthenticated();
         ShoppingCart shoppingCart = shoppingCartRepository.findById(user.getId()).orElseThrow(
                 () -> new EntityNotFoundException("Cannot find cart for authenticated user")
         );
@@ -103,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static void authorizeCartAccess(ShoppingCart cart) {
-        User user = getAuthenticatedUser();
+        User user = User.requireAuthenticated();
         if (!cart.getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Cart is not maintained by authenticated user"
@@ -112,23 +110,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static void authorizeOrderAccess(Order order) {
-        User user = getAuthenticatedUser();
+        User user = User.requireAuthenticated();
         if (!order.getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Order is not maintained by authenticated user"
             );
         }
-    }
-
-    private static User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new IllegalStateException("Authentication object is null");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User user) {
-            return user;
-        }
-        throw new IllegalStateException("Authentication principal object is an unknown type");
     }
 }
