@@ -163,9 +163,12 @@ public class ShoppingCartServiceTest {
         Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
         CartItem cartItem = new CartItem();
+        cartItem.setBook(book);
+        cartItem.setShoppingCart(cart);
+        cartItem.setQuantity(1);
         Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
         Mockito.when(cartItemRepository.findFirstByShoppingCartAndBook(cart, book))
-                .thenReturn(Optional.of(cartItem));
+                .thenReturn(Optional.empty());
         Mockito.when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
         Mockito.when(shoppingCartRepository.save(cart)).thenReturn(cart);
         List<CartItemResponseDto> cartItems = new ArrayList<>();
