@@ -45,14 +45,10 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.number").isNumber())
-                .andExpect(jsonPath("$.size").isNumber())
-                .andExpect(jsonPath("$.totalPages").isNumber())
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.numberOfElements").isNumber())
-                .andExpect(jsonPath("$.sort").isMap())
-                .andExpect(jsonPath("$.first").isBoolean())
-                .andExpect(jsonPath("$.last").isBoolean())
+                .andExpect(jsonPath("$.page.number").isNumber())
+                .andExpect(jsonPath("$.page.size").isNumber())
+                .andExpect(jsonPath("$.page.totalPages").isNumber())
+                .andExpect(jsonPath("$.page.totalElements").isNumber())
                 .andReturn();
     }
 
@@ -251,14 +247,10 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books/search?isbns=978-0-123456-78-9"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isNotEmpty())
-                .andExpect(jsonPath("$.number").isNumber())
-                .andExpect(jsonPath("$.size").isNumber())
-                .andExpect(jsonPath("$.totalPages").isNumber())
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.numberOfElements").isNumber())
-                .andExpect(jsonPath("$.sort").isMap())
-                .andExpect(jsonPath("$.first").isBoolean())
-                .andExpect(jsonPath("$.last").isBoolean())
+                .andExpect(jsonPath("$.page.number").isNumber())
+                .andExpect(jsonPath("$.page.size").isNumber())
+                .andExpect(jsonPath("$.page.totalPages").isNumber())
+                .andExpect(jsonPath("$.page.totalElements").isNumber())
                 .andReturn();
     }
 
@@ -272,14 +264,10 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books/search?isbns=999-9-999999-99-9"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isEmpty())
-                .andExpect(jsonPath("$.number").isNumber())
-                .andExpect(jsonPath("$.size").isNumber())
-                .andExpect(jsonPath("$.totalPages").isNumber())
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.numberOfElements").isNumber())
-                .andExpect(jsonPath("$.sort").isMap())
-                .andExpect(jsonPath("$.first").isBoolean())
-                .andExpect(jsonPath("$.last").isBoolean())
+                .andExpect(jsonPath("$.page.number").isNumber())
+                .andExpect(jsonPath("$.page.size").isNumber())
+                .andExpect(jsonPath("$.page.totalPages").isNumber())
+                .andExpect(jsonPath("$.page.totalElements").isNumber())
                 .andReturn();
     }
 
@@ -293,14 +281,10 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books/search?authors=Test Author"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isNotEmpty())
-                .andExpect(jsonPath("$.number").isNumber())
-                .andExpect(jsonPath("$.size").isNumber())
-                .andExpect(jsonPath("$.totalPages").isNumber())
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.numberOfElements").isNumber())
-                .andExpect(jsonPath("$.sort").isMap())
-                .andExpect(jsonPath("$.first").isBoolean())
-                .andExpect(jsonPath("$.last").isBoolean())
+                .andExpect(jsonPath("$.page.number").isNumber())
+                .andExpect(jsonPath("$.page.size").isNumber())
+                .andExpect(jsonPath("$.page.totalPages").isNumber())
+                .andExpect(jsonPath("$.page.totalElements").isNumber())
                 .andReturn();
     }
 
@@ -314,14 +298,10 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books/search?authors=Tester"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isEmpty())
-                .andExpect(jsonPath("$.number").isNumber())
-                .andExpect(jsonPath("$.size").isNumber())
-                .andExpect(jsonPath("$.totalPages").isNumber())
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.numberOfElements").isNumber())
-                .andExpect(jsonPath("$.sort").isMap())
-                .andExpect(jsonPath("$.first").isBoolean())
-                .andExpect(jsonPath("$.last").isBoolean())
+                .andExpect(jsonPath("$.page.number").isNumber())
+                .andExpect(jsonPath("$.page.size").isNumber())
+                .andExpect(jsonPath("$.page.totalPages").isNumber())
+                .andExpect(jsonPath("$.page.totalElements").isNumber())
                 .andReturn();
     }
 
