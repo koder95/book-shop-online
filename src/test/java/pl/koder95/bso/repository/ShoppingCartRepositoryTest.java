@@ -13,7 +13,6 @@ import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import pl.koder95.bso.config.JpaTestConfig;
 import pl.koder95.bso.model.Role;
-import pl.koder95.bso.model.RoleName;
 import pl.koder95.bso.model.ShoppingCart;
 import pl.koder95.bso.model.User;
 
@@ -36,9 +35,7 @@ class ShoppingCartRepositoryTest {
         newUser.setPassword("testcontainersInTests");
         newUser.setFirstName("John");
         newUser.setLastName("Smith");
-        Role role = new Role();
-        role.setName(RoleName.ROLE_USER);
-        newUser.getRoles().add(role);
+        newUser.getRoles().add(em.find(Role.class, 2));
         user = em.persistAndFlush(newUser);
     }
 
@@ -68,7 +65,7 @@ class ShoppingCartRepositoryTest {
         cart.setUser(user);
         cart = shoppingCartRepository.saveAndFlush(cart);
 
-        shoppingCartRepository.deleteById(user.getId());
+        shoppingCartRepository.delete(cart);
         shoppingCartRepository.flush();
         em.clear();
 
