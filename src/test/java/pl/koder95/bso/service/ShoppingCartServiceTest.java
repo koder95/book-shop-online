@@ -161,11 +161,11 @@ public class ShoppingCartServiceTest {
         book.setPrice(BigDecimal.TEN);
         book.setCategories(new HashSet<>());
         Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
         CartItem cartItem = new CartItem();
         cartItem.setBook(book);
         cartItem.setShoppingCart(cart);
         cartItem.setQuantity(1);
+        CartItemRequestDto requestDto = new CartItemRequestDto(1L, 1);
         Mockito.when(cartItemMapper.toModel(requestDto, book, cart)).thenReturn(cartItem);
         Mockito.when(cartItemRepository.findFirstByShoppingCartAndBook(cart, book))
                 .thenReturn(Optional.empty());
