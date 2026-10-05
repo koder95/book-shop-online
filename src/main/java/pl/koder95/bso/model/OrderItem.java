@@ -25,7 +25,7 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     private Order order;
     @JoinColumn(name = "book_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Book book;
     @Column(nullable = false)
     private int quantity;

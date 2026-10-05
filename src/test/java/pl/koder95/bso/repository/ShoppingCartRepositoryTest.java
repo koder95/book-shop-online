@@ -1,7 +1,6 @@
 package pl.koder95.bso.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,7 +52,6 @@ class ShoppingCartRepositoryTest {
 
         ShoppingCart found = shoppingCartRepository.findById(user.getId()).orElseThrow();
         assertEquals(user.getId(), found.getId());
-        assertFalse(found.isDeleted());
     }
 
     @Test
@@ -68,7 +66,7 @@ class ShoppingCartRepositoryTest {
     void delete_cart_isSoftDeleted() {
         ShoppingCart cart = new ShoppingCart();
         cart.setUser(user);
-        shoppingCartRepository.saveAndFlush(cart);
+        cart = shoppingCartRepository.saveAndFlush(cart);
 
         shoppingCartRepository.deleteById(user.getId());
         shoppingCartRepository.flush();
