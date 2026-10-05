@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -365,6 +366,52 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
+    void updateItem_asNotOwner_throwAccessDeniedException() {
+        Role userRole = new Role();
+        userRole.setName(RoleName.ROLE_USER);
+        User authenticated = new User();
+        authenticated.setId(1L);
+        authenticated.setRoles(Set.of(userRole));
+        authenticated.setEmail("user1@example.com");
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("title");
+        ShoppingCart cart = new ShoppingCart();
+        cart.setId(2L);
+        User owner = new User();
+        owner.setId(2L);
+        owner.setRoles(Set.of(userRole));
+        owner.setEmail("user2@example.com");
+        cart.setUser(owner);
+        cart.setCartItems(new HashSet<>());
+        CartItem cartItem = new CartItem();
+        cartItem.setId(1L);
+        cartItem.setQuantity(1);
+        cartItem.setBook(book);
+        cartItem.setShoppingCart(cart);
+        cart.getCartItems().add(cartItem);
+        Mockito.when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
+        try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
+            SecurityContext mockedSecurityContext = Mockito.mock();
+            mockedStatic.when(SecurityContextHolder::getContext).thenReturn(mockedSecurityContext);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
+            Mockito.when(mockedSecurityContext.getAuthentication()).thenReturn(auth);
+            assertThrows(AccessDeniedException.class, () -> shoppingCartService.updateItem(1L, 3));
+            Mockito.verify(mockedSecurityContext, Mockito.times(1)).getAuthentication();
+            mockedStatic.verify(SecurityContextHolder::getContext, Mockito.times(1));
+            Mockito.verifyNoMoreInteractions(mockedSecurityContext);
+            mockedStatic.verifyNoMoreInteractions();
+        }
+        Mockito.verify(cartItemRepository).findById(1L);
+        Mockito.verifyNoMoreInteractions(
+                cartItemRepository, shoppingCartRepository, shoppingCartMapper
+        );
+        Mockito.verifyNoInteractions(bookRepository, cartItemMapper, shoppingCartFactory);
+    }
+
+    @Test
     void updateItem_asOwnerWhenCartMissing_createsCart_ok() {
         Role userRole = new Role();
         userRole.setName(RoleName.ROLE_USER);
@@ -443,18 +490,19 @@ public class ShoppingCartServiceTest {
     }
 
     @Test
-    void deleteItem_existentId_ok() {
+    void deleteItem_existentIdAsCartOwner_ok() {
         CartItem cartItem = new CartItem();
         cartItem.setId(1L);
         ShoppingCart shoppingCart = new ShoppingCart();
         cartItem.setShoppingCart(shoppingCart);
         User authenticated = new User();
+        authenticated.setEmail("user@example.com");
         shoppingCart.setUser(authenticated);
         authenticated.setId(1L);
         Role userRole = new Role();
         userRole.setName(RoleName.ROLE_USER);
         authenticated.setRoles(Set.of(userRole));
-        Mockito.when(cartItemRepository.findById(1L)).thenReturn(java.util.Optional.of(cartItem));
+        Mockito.when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
         Mockito.doNothing().when(cartItemRepository).deleteById(1L);
         try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
             SecurityContext context = Mockito.mock();
@@ -472,5 +520,44 @@ public class ShoppingCartServiceTest {
         Mockito.verify(cartItemRepository, Mockito.times(1)).findById(1L);
         Mockito.verify(cartItemRepository, Mockito.times(1)).deleteById(1L);
         Mockito.verifyNoMoreInteractions(cartItemRepository);
+    }
+
+    @Test
+    void deleteItem_existentIdAsNotCartOwner_throwAccessDeniedException() {
+        User authenticated = new User();
+        authenticated.setEmail("user@example.com");
+        authenticated.setId(1L);
+        User owner = new User();
+        owner.setEmail("owner@example.com");
+        owner.setId(2L);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUser(owner);
+        CartItem cartItem = new CartItem();
+        cartItem.setId(1L);
+        cartItem.setShoppingCart(shoppingCart);
+        Role userRole = new Role();
+        userRole.setName(RoleName.ROLE_USER);
+        Set<Role> roles = Set.of(userRole);
+        authenticated.setRoles(roles);
+        owner.setRoles(roles);
+        Mockito.when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
+        try (var mockedStatic = Mockito.mockStatic(SecurityContextHolder.class)) {
+            SecurityContext context = Mockito.mock();
+            mockedStatic.when(SecurityContextHolder::getContext).thenReturn(context);
+            var authenticationToken = new UsernamePasswordAuthenticationToken(
+                    authenticated, null, authenticated.getAuthorities()
+            );
+            Mockito.when(context.getAuthentication()).thenReturn(authenticationToken);
+            assertThrows(AccessDeniedException.class, () -> shoppingCartService.deleteItem(1L));
+            Mockito.verify(context, Mockito.times(1)).getAuthentication();
+            Mockito.verifyNoMoreInteractions(context);
+            mockedStatic.verify(SecurityContextHolder::getContext, Mockito.times(1));
+            mockedStatic.verifyNoMoreInteractions();
+        }
+        Mockito.verify(cartItemRepository, Mockito.times(1)).findById(1L);
+        Mockito.verifyNoMoreInteractions(cartItemRepository);
+        Mockito.verifyNoInteractions(
+                cartItemMapper, shoppingCartFactory, shoppingCartMapper, shoppingCartRepository
+        );
     }
 }
