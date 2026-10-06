@@ -42,13 +42,11 @@ public class CategoryServiceTest {
         Category beforeSave = new Category();
         beforeSave.setName(testName);
         beforeSave.setDescription(testDescription);
-        beforeSave.setDeleted(false);
         Long id = 1L;
         Category afterSave = new Category();
         afterSave.setId(id);
         afterSave.setName(testName);
         afterSave.setDescription(testDescription);
-        afterSave.setDeleted(false);
         CategoryResponseDto expected = new CategoryResponseDto(
                 id, testName, testDescription
         );
@@ -77,7 +75,6 @@ public class CategoryServiceTest {
         Category beforeSave = new Category();
         beforeSave.setName(null);
         beforeSave.setDescription(testDescription);
-        beforeSave.setDeleted(false);
         CreateCategoryRequestDto request = new CreateCategoryRequestDto(
                 null, testDescription
         );
@@ -119,13 +116,11 @@ public class CategoryServiceTest {
         Category beforeSave = new Category();
         beforeSave.setName(testName);
         beforeSave.setDescription(null);
-        beforeSave.setDeleted(false);
         Long id = 1L;
         Category afterSave = new Category();
         afterSave.setId(id);
         afterSave.setName(testName);
         afterSave.setDescription(null);
-        afterSave.setDeleted(false);
         CategoryResponseDto expected = new CategoryResponseDto(
                 id, testName, null
         );
@@ -157,7 +152,6 @@ public class CategoryServiceTest {
         model.setId(id);
         model.setName(testName);
         model.setDescription(testDescription);
-        model.setDeleted(false);
         CategoryResponseDto expected = new CategoryResponseDto(
                 id, testName, testDescription
         );
@@ -225,7 +219,6 @@ public class CategoryServiceTest {
         model.setId(id);
         model.setName(testName);
         model.setDescription(testDescription);
-        model.setDeleted(false);
         UpdateCategoryDto request = new UpdateCategoryDto(
                 id, testName, newTestDescription
         );
@@ -260,7 +253,6 @@ public class CategoryServiceTest {
         model.setId(id);
         model.setName(testName);
         model.setDescription(testDescription);
-        model.setDeleted(false);
         UpdateCategoryDto request = new UpdateCategoryDto(
                 id, testName, newTestDescription
         );
@@ -319,7 +311,6 @@ public class CategoryServiceTest {
         category.setName(testCategory);
         String testDescription = "Test description";
         category.setDescription(testDescription);
-        category.setDeleted(false);
         CategoryResponseDto categoryResponseDto = new CategoryResponseDto(
                 id, testCategory, testDescription
         );

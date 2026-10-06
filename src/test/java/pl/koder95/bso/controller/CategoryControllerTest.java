@@ -96,14 +96,10 @@ public class CategoryControllerTest {
         mockMvc.perform(get("/api/categories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isNotEmpty())
-                .andExpect(jsonPath("$.number").isNumber())
-                .andExpect(jsonPath("$.size").isNumber())
-                .andExpect(jsonPath("$.totalPages").isNumber())
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.numberOfElements").isNumber())
-                .andExpect(jsonPath("$.sort").isMap())
-                .andExpect(jsonPath("$.first").isBoolean())
-                .andExpect(jsonPath("$.last").isBoolean());
+                .andExpect(jsonPath("$.page.number").isNumber())
+                .andExpect(jsonPath("$.page.size").isNumber())
+                .andExpect(jsonPath("$.page.totalPages").isNumber())
+                .andExpect(jsonPath("$.page.totalElements").isNumber());
     }
 
     @Test

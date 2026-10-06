@@ -3,8 +3,6 @@ package pl.koder95.bso.service.impl;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.koder95.bso.dto.CartItemRequestDto;
@@ -33,13 +31,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartFactory shoppingCartFactory;
 
     private ShoppingCart createShoppingCart() {
-        ShoppingCart created = shoppingCartFactory.createShoppingCart(getAuthenticatedUser());
+        ShoppingCart created = shoppingCartFactory.createShoppingCart(User.requireAuthenticated());
         shoppingCartRepository.save(created);
         return created;
     }
 
     private ShoppingCart getOrCreateShoppingCart() {
-        return shoppingCartRepository.findById(getAuthenticatedUser().getId())
+        return shoppingCartRepository.findById(User.requireAuthenticated().getId())
                 .orElseGet(this::createShoppingCart);
     }
 
@@ -64,9 +62,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .findFirstByShoppingCartAndBook(shoppingCart, book);
         if (first.isPresent()) {
             Integer quantity = item.getQuantity();
-            quantity = quantity == null ? 0 : quantity; // preventing NPE
+            final int old = quantity == null ? 0 : quantity; // preventing NPE
             item = first.get();
-            item.setQuantity(item.getQuantity() + quantity);
+            quantity = item.getQuantity();
+            final int toAdd = quantity == null ? 0 : quantity; // preventing NPE
+            item.setQuantity(old + toAdd);
         }
         cartItemRepository.save(item);
         shoppingCart.getCartItems().add(item);
@@ -99,23 +99,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private static void authorizeCartItemAccess(CartItem cartItem) {
-        User user = getAuthenticatedUser();
+        User user = User.requireAuthenticated();
         if (!cartItem.getShoppingCart().getUser().equals(user)) {
             throw new AccessDeniedException(
                     "Item is not in shopping cart maintained by user: " + user.getEmail()
             );
         }
-    }
-
-    private static User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new IllegalStateException("Authentication object is null");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User user) {
-            return user;
-        }
-        throw new IllegalStateException("Authentication principal object is an unknown type");
     }
 }

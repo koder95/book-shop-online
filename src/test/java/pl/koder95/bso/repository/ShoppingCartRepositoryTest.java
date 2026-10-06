@@ -1,0 +1,74 @@
+package pl.koder95.bso.repository;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.context.annotation.Import;
+import pl.koder95.bso.config.JpaTestConfig;
+import pl.koder95.bso.model.Role;
+import pl.koder95.bso.model.ShoppingCart;
+import pl.koder95.bso.model.User;
+
+@DataJpaTest
+@Import(JpaTestConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class ShoppingCartRepositoryTest {
+
+    @Autowired
+    private TestEntityManager em;
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        User newUser = new User();
+        newUser.setEmail("test@example.com");
+        newUser.setPassword("testcontainersInTests");
+        newUser.setFirstName("John");
+        newUser.setLastName("Smith");
+        newUser.getRoles().add(em.find(Role.class, 2));
+        user = em.persistAndFlush(newUser);
+    }
+
+    @Test
+    void save_cartWithExistingUser_sharesIdWithUser() {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUser(user);
+
+        shoppingCartRepository.saveAndFlush(cart);
+        em.clear();
+
+        ShoppingCart found = shoppingCartRepository.findById(user.getId()).orElseThrow();
+        assertEquals(user.getId(), found.getId());
+    }
+
+    @Test
+    void save_cartWithoutUser_throwsException() {
+        ShoppingCart cart = new ShoppingCart();
+
+        assertThrows(RuntimeException.class,
+                () -> shoppingCartRepository.saveAndFlush(cart));
+    }
+
+    @Test
+    void delete_cart_isSoftDeleted() {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUser(user);
+        cart = shoppingCartRepository.saveAndFlush(cart);
+
+        shoppingCartRepository.delete(cart);
+        shoppingCartRepository.flush();
+        em.clear();
+
+        assertTrue(shoppingCartRepository.findById(user.getId()).isEmpty());
+    }
+}

@@ -1,6 +1,5 @@
 package pl.koder95.bso.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -12,15 +11,13 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "shopping_carts")
-@SQLDelete(sql = "UPDATE shopping_carts SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
+@SoftDelete(columnName = "is_deleted")
 public class ShoppingCart {
     @Id
     private Long id;
@@ -30,6 +27,4 @@ public class ShoppingCart {
     private User user;
     @OneToMany(mappedBy = "shoppingCart")
     private Set<CartItem> cartItems = new HashSet<>();
-    @Column(nullable = false, name = "is_deleted")
-    private boolean isDeleted = false;
 }

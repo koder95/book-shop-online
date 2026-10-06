@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record CartItemRequestDto(
+        @Min(1)
         @NotNull
         Long bookId,
         @Min(1)

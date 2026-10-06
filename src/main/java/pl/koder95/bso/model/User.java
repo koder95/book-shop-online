@@ -12,20 +12,22 @@ import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.SoftDelete;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.koder95.bso.exception.AuthenticatedUserException;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
+@SoftDelete(columnName = "is_deleted")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +41,6 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String lastName;
     private String shippingAddress;
-    @Column(nullable = false)
-    private boolean isDeleted = false;
     @ManyToMany
     @JoinTable(
             name = "users_roles",
@@ -75,5 +75,21 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(getEmail());
+    }
+
+    public static Optional<User> authenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return Optional.empty();
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User user) {
+            return Optional.of(user);
+        }
+        return Optional.empty();
+    }
+
+    public static User requireAuthenticated() {
+        return authenticated().orElseThrow(AuthenticatedUserException::new);
     }
 }

@@ -22,6 +22,12 @@ databaseChangeLog:
                     foreignKeyName: fk_ur_role
                     referencedTableName: roles
                     referencedColumnNames: id
+              - column:
+                  name: is_deleted
+                  type: bit
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
         - addPrimaryKey:
             tableName: users_roles
             columnNames: user_id, role_id
