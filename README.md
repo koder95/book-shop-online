@@ -92,7 +92,29 @@ The container is stateless, so it can run on any platform that supports Docker i
 
 ## :five: License & Contribution
 
-Content coming soon...
+### License
+
+This project is licensed under the [MIT License](LICENSE).
+
+### Contribution
+
+Contributions are welcome! You can help in two ways:
+
+#### :clipboard: Report a problem or suggest an idea
+
+Open an [Issue](https://github.com/koder95/book-shop-online/issues) and describe:
+
+- what you expected and what actually happened (for bugs), including steps to reproduce,
+- or what you would like to see and why (for feature proposals).
+
+#### :hammer_and_wrench: Submit a change
+
+1. Fork the repository.
+2. Create a branch in your fork for your change (e.g. `fix/cart-validation`).
+3. Commit your changes and push the branch to your fork.
+4. Open a [Pull Request](https://github.com/koder95/book-shop-online/pulls) from your fork to this repository.
+
+Please keep each Pull Request focused on a single topic, describe what it changes and why, and link the related Issue if there is one. Make sure the CI build passes before requesting a review.
 
 ## :six: Special Thanks
 
