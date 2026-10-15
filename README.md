@@ -46,7 +46,49 @@ The project follows a traditional layered architecture pattern:
 
 ## :four: Deployment
 
-Content coming soon...
+The application is shipped as a Docker image built in multiple stages (based on `ubuntu-jdk:21`), so no local Java or Maven installation is required.
+
+### Configuration
+
+All settings are passed as environment variables:
+
+| Variable         | Description                        |
+| ---------------- | ---------------------------------- |
+| `DB_HOST`        | MySQL host                         |
+| `DB_NAME`        | Database name                      |
+| `DB_USER`        | Database user                      |
+| `DB_PASS`        | Database password                  |
+| `JWT_SECRET`     | Secret used to sign JWT tokens     |
+| `JWT_EXPIRATION` | Token lifetime in milliseconds     |
+
+The database schema is created and migrated automatically by Liquibase on startup.
+
+> [!TIP]
+> SQL logging (`spring.jpa.show-sql`) is enabled by default, which is convenient for development. In production, turn it off by setting `SPRING_JPA_SHOW_SQL=false`.
+
+### Build and run
+
+```bash
+docker buildx build --load -t book-shop-online .
+
+docker run -d --name book-shop-online \
+  -p 8888:8888 \
+  -e DB_HOST=<host> \
+  -e DB_NAME=<database> \
+  -e DB_USER=<user> \
+  -e DB_PASS=<password> \
+  -e JWT_SECRET=<secret> \
+  -e JWT_EXPIRATION=3600000 \
+  -e SPRING_JPA_SHOW_SQL=false \
+  book-shop-online
+```
+
+### Verify
+
+- Swagger UI: `http://localhost:8888/swagger-ui/index.html`
+- OpenAPI spec: `http://localhost:8888/v3/api-docs`
+
+The container is stateless, so it can run on any platform that supports Docker images (e.g. AWS ECS/Fargate, Google Cloud Run) with an external MySQL database.
 
 ## :five: License & Contribution
 
