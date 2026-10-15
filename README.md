@@ -36,7 +36,13 @@ The project follows a traditional layered architecture pattern:
 
 ## :three: Technologies
 
-Content coming soon...
+| # | Layer      | Technologies                                            |
+|---|------------|---------------------------------------------------------|
+| 1 | :four:     | Spring Web MVC, Spring Security, JWT                    |
+| 2 | :three:    | Mapstruct                                               |
+| 3 | :two:      | Hibernate ORM, Spring Data JPA                          |
+| 4 | :one:      | MySQL, Liquibase, Tomcat 11                             |
+| 5 | :asterisk: | Lombok 1.18, Spring Boot 4, Spring Framework 7, Java 21 |
 
 ## :four: Deployment
 
