@@ -118,4 +118,12 @@ Please keep each Pull Request focused on a single topic, describe what it change
 
 ## :six: Special Thanks
 
-Content coming soon...
+A big thank you to the mentors who reviewed the Pull Requests of this project. Their thorough and honest code reviews helped catch many bugs and design flaws before they reached the codebase, and taught me a great deal along the way.
+
+<div style="text-align: center">
+
+<a href="https://github.com/slade13"><img style="border: 1px solid gold" src="https://github.com/slade13.png" height="60" alt="Mateusz Lubiński"/></a>
+<a href="https://github.com/mateuszwojtkowiak"><img style="border: 1px solid gold" src="https://github.com/mateuszwojtkowiak.png" height="60" alt="Mateusz Wojtkowiak"/></a>
+<a href="https://github.com/MateuszRostek"><img style="border: 1px solid gold" src="https://github.com/MateuszRostek.png" height="60" alt="Mateusz Rostek"/></a>
+
+</div>
