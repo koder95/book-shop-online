@@ -23,7 +23,16 @@ The project follows a traditional layered architecture pattern:
 
 ## :two: Features
 
-Content coming soon...
+| # | Feature                  | URI                                    | Methods                                 |
+|---|--------------------------|----------------------------------------|-----------------------------------------|
+| 1 | Authentication           | `/api/auth/login`                      | `POST`                                  |
+| 2 | User registation         | `/api/auth/registration`               | `POST`                                  |
+| 3 | Book management          | `/api/books`, `/api/books/*`           | `GET`, `POST`, `PUT`, `DELETE`          |
+| 4 | Category management      | `/api/categories`, `/api/categories/*` | `GET`, `POST`, `PUT`, `DELETE`          |
+| 5 | Shopping cart management | `/api/cart`, `/api/cart/*`             | `GET`, `POST`, `PUT`, `DELETE`          |
+| 6 | Order management         | `/api/orders`, `/api/orders/*`         | `GET`, `POST`, `PATCH`, `PUT`, `DELETE` |
+| 7 | Open API                 | `/v3/api-docs`                         | `GET`                                   |
+| 8 | Swagger UI               | `/swagger-ui/index.html`               | `GET`                                   |
 
 ## :three: Technologies
 
