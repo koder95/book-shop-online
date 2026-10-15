@@ -1,11 +1,11 @@
 <div style="text-align: center">
 
 # ![Book Shop Online](./.github/media/banner.png)
-[![Java CI](https://github.com/koder95/book-shop-online/actions/workflows/ci.yml/badge.svg)](https://github.com/koder95/book-shop-online/actions/workflows/ci.yml)
+[![Java CI](https://github.com/koder95/book-shop-online/actions/workflows/ci.yml/badge.svg)](https://github.com/koder95/book-shop-online/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
 
-:rocket: Welcome to **Book Shop Online** project. This is an implementation of a backend service :brain: for a bookstore :books:.
+:rocket: Welcome to the **Book Shop Online** project. This is an implementation of a backend service :brain: for a bookstore :books:.
 
 ## :one: General, concept, architecture
 
@@ -26,7 +26,7 @@ The project follows a traditional layered architecture pattern:
 | # | Feature                  | URI                                    | Methods                                 |
 |---|--------------------------|----------------------------------------|-----------------------------------------|
 | 1 | Authentication           | `/api/auth/login`                      | `POST`                                  |
-| 2 | User registation         | `/api/auth/registration`               | `POST`                                  |
+| 2 | User registration        | `/api/auth/registration`               | `POST`                                  |
 | 3 | Book management          | `/api/books`, `/api/books/*`           | `GET`, `POST`, `PUT`, `DELETE`          |
 | 4 | Category management      | `/api/categories`, `/api/categories/*` | `GET`, `POST`, `PUT`, `DELETE`          |
 | 5 | Shopping cart management | `/api/cart`, `/api/cart/*`             | `GET`, `POST`, `PUT`, `DELETE`          |
